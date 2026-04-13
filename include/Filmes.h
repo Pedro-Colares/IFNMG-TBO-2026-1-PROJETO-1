@@ -4,11 +4,14 @@
 #include "FILME.h"
 #include<string>
 #include<vector>
+#include <unordered_map>
+
+using namespace std;
 
 class Filmes{
 
     private:
-    vector<Filme> lista;
+    vector<Filme*> lista;
       unordered_map<string, Filme*> mapa;
 
     public:
