@@ -100,7 +100,7 @@ vector<Filme*> Filmes::filtrarPorDuracao(int min, int max){
     return resultado;
 }
 
-vector<Filmes*> Filmes::filtrarPorTipo(string tipo){
+vector<Filme*> Filmes::filtrarPorTipo(string tipo){
     vector<Filme*>resultado;
     for(int i=0; i<lista.size(); i++){
         Filme* f = lista[i];
