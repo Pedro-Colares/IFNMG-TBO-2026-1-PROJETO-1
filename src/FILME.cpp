@@ -37,7 +37,7 @@ void Filme::setTitulo(string titulo) {
 int Filme::getAno(){
     return startYear;
 }
-void Filme::setStartYear(int ano) {
+void Filme::setAno(int ano) {
     startYear = ano;
 }
 
@@ -48,7 +48,7 @@ void Filme::setDuracao(int duracao) {
     runtimeMinutes = duracao;
 }
 
-vector<string> getGeneros(){
+vector<string> Filme::getGeneros(){
     return genres;
 }
 void Filme::addGenero(string genero) {
@@ -67,7 +67,7 @@ void Filme::setIsAdult(bool adult) {
 }
 
 bool Filme::ehDoTipo(string tipo){
-    return titleType = tipo;
+    return titleType == tipo;
 }
 
 bool Filme::estaNoIntervaloAno(int min, int max){
@@ -76,4 +76,12 @@ bool Filme::estaNoIntervaloAno(int min, int max){
 
 bool Filme::estaNoIntervaloDuracao(int min, int max){
     return runtimeMinutes >= min && runtimeMinutes <= max;
+}
+
+void Filme::setStartYear(int ano){
+    startYear = ano;
+}
+
+void Filme::setEndYear(int ano){
+    endYear = ano;
 }

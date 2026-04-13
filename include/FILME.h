@@ -34,6 +34,9 @@ class Filme{
       void setDuracao(int duracao);
       vector<string> getGeneros();
       void addGenero(string genero);
+      void setStartYear(int ano);
+      void setEndYear(int ano);
+      void setIsAdult(bool adult);
 
       bool temGenero(string genero);
       bool ehDoTipo(string tipo);
