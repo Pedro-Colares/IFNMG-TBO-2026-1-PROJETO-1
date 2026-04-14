@@ -1,32 +1,34 @@
 #include "Filmes.h"
-#include<fstream>
-#include<sstream>
-#include<iostream>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 
 using namespace std;
 
 Filmes::Filmes(){}
+
 Filmes::~Filmes(){
-    for(int i=0; i<lista.size(); i++){
-        Filme* f = lista[i];
-        delete f;
+    for(int i = 0; i < lista.size(); i++){
+        delete lista[i];
     }
     lista.clear();
 }
 
 void Filmes::carregar(string arquivo){
-
     ifstream file(arquivo);
     string linha;
+
     if(!file.is_open()){
         cout << "Erro ao abrir o arquivo!" << endl;
         return;
     }
 
     while(getline(file, linha)){
-        stringstream ss(linha);
+        if(linha.empty()) continue;
 
+        stringstream ss(linha);
         string id, tipo, titulo, isAdultStr, anoStr, endYearStr, duracaoStr, generosStr;
+
         getline(ss, id, '\t');
         getline(ss, tipo, '\t');
         getline(ss, titulo, '\t');
@@ -36,7 +38,11 @@ void Filmes::carregar(string arquivo){
         getline(ss, duracaoStr, '\t');
         getline(ss, generosStr, '\t');
 
+        if(id.size() < 3)continue;
+
+        int idNumerico = stoi(id.substr(2));
         Filme* f = new Filme();
+
         f->setId(id);
         f->setTipo(tipo);
         f->setTitulo(titulo);
@@ -45,69 +51,73 @@ void Filmes::carregar(string arquivo){
         f->setEndYear((endYearStr == "\\N") ? 0 : stoi(endYearStr));
         f->setDuracao((duracaoStr == "\\N") ? 0 : stoi(duracaoStr));
 
-        stringstream generos(generosStr);
+        if(idNumerico >= listaDireta.size()){
+            listaDireta.resize(idNumerico + 1, nullptr);
+        }
+
+        if(listaDireta[idNumerico] == nullptr){
+            listaDireta[idNumerico] = f;
+        }
+
+        mapaTipo[tipo].push_back(f);
+        stringstream ssGeneros(generosStr);
         string genero;
 
-        while(getline(generos, genero, ',')){
+        while(getline(ssGeneros, genero, ',')){
             f->addGenero(genero);
+            mapaGenero[genero].push_back(f);
         }
 
         lista.push_back(f);
-        mapa[id] = f;
-
     }
 
     file.close();
-
 }
 
 Filme* Filmes::buscarPorId(string id){
-    if(mapa.find(id) != mapa.end()){
-        return mapa[id];
+    if(id.size() < 3) return nullptr;
+
+    int idNumerico = stoi(id.substr(2));
+    if(idNumerico >= 0 && idNumerico < listaDireta.size()){
+        return listaDireta[idNumerico];
     }
     return nullptr;
 }
 
 vector<Filme*> Filmes::filtrarPorGenero(string genero){
-    vector<Filme*> resultado;
-    for(int i=0; i<lista.size(); i++){
-        Filme* f = lista[i];
-        if(f->temGenero(genero)){
-            resultado.push_back(f);
-        }
+    if(mapaGenero.count(genero)){
+        return mapaGenero[genero];
     }
-    return resultado;
+    return {};
+}
+
+vector<Filme*> Filmes::filtrarPorTipo(string tipo){
+    if(mapaTipo.count(tipo)){
+        return mapaTipo[tipo]; 
+    }
+    return {};
 }
 
 vector<Filme*> Filmes::filtrarPorAno(int min, int max){
-    vector<Filme*>resultado;
-    for(int i=0; i<lista.size(); i++){
+    vector<Filme*> resultado;
+    for(int i = 0; i < lista.size(); i++){
         Filme* f = lista[i];
         if(f->estaNoIntervaloAno(min, max)){
             resultado.push_back(f);
         }
     }
+
     return resultado;
 }
 
 vector<Filme*> Filmes::filtrarPorDuracao(int min, int max){
-    vector<Filme*>resultado;
-    for(int i=0; i<lista.size(); i++){
+    vector<Filme*> resultado;
+    for(int i = 0; i < lista.size(); i++){
         Filme* f = lista[i];
         if(f->estaNoIntervaloDuracao(min, max)){
             resultado.push_back(f);
         }
     }
-    return resultado;
-}
 
-vector<Filme*> Filmes::filtrarPorTipo(string tipo){
-    vector<Filme*>resultado;
-    for(int i=0; i<lista.size(); i++){
-        Filme* f = lista[i];
-        if(f->ehDoTipo(tipo)){
-            resultado.push_back(f);
-        }
-    }
     return resultado;
 }
