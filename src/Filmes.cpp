@@ -40,9 +40,11 @@ void Filmes::carregar(string arquivo){
 
         if(id.size() < 3)continue;
 
-        int idNumerico = stoi(id.substr(2));
-        Filme* f = new Filme();
+        int bruto = stoi(id.substr(2));
+        if(bruto % 2 != 0)continue;
+        int idNumerico = bruto / 2;
 
+        Filme* f = new Filme();
         f->setId(id);
         f->setTipo(tipo);
         f->setTitulo(titulo);
@@ -75,12 +77,15 @@ void Filmes::carregar(string arquivo){
 }
 
 Filme* Filmes::buscarPorId(string id){
-    if(id.size() < 3) return nullptr;
 
-    int idNumerico = stoi(id.substr(2));
+    if(id.size() < 3) return nullptr;
+    int bruto = stoi(id.substr(2));
+    if(bruto % 2 != 0) return nullptr;
+    int idNumerico = bruto / 2;
     if(idNumerico >= 0 && idNumerico < listaDireta.size()){
         return listaDireta[idNumerico];
     }
+
     return nullptr;
 }
 
