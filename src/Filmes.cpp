@@ -126,3 +126,72 @@ vector<Filme*> Filmes::filtrarPorDuracao(int min, int max){
 
     return resultado;
 }
+
+vector<Filme*> intersecao(vector<Filme*> a, vector<Filme*> b){
+    vector<Filme*> resultado;
+
+    for(Filme* f1 : a){
+        for(Filme* f2 : b){
+            if(f1 == f2){
+                resultado.push_back(f1);
+                break;
+            }
+        }
+    }
+
+    return resultado;
+}
+
+
+vector<Filme*> uniao(vector<Filme*> a, vector<Filme*> b){
+    vector<Filme*> resultado = a;
+
+    for(Filme* f : b){
+        bool existe = false;
+
+        for(Filme* r : resultado){
+            if(r == f){
+                existe = true;
+                break;
+            }
+        }
+
+        if(!existe){
+            resultado.push_back(f);
+        }
+    }
+
+    return resultado;
+}
+
+vector<Filme*> Filmes::filtrarConsulta(string consulta){
+
+    stringstream ss(consulta);
+    vector<string> tokens;
+    string token;
+
+    // separa por espaço
+    while(ss >> token){
+        tokens.push_back(token);
+    }
+
+    // primeiro filtro
+    vector<Filme*> resultado = filtrarPorGenero(tokens[0]);
+
+    // percorre operadores
+    for(int i = 1; i < tokens.size(); i += 2){
+        string op = tokens[i];
+        string valor = tokens[i+1];
+
+        vector<Filme*> novo = filtrarPorGenero(valor);
+
+        if(op == "&"){
+            resultado = intersecao(resultado, novo);
+        }
+        else if(op == "|"){
+            resultado = uniao(resultado, novo);
+        }
+    }
+
+    return resultado;
+}

@@ -27,6 +27,7 @@ class Filmes{
       vector<Filme*> filtrarPorAno(int min, int max);
       vector<Filme*> filtrarPorDuracao(int min, int max);
       vector<Filme*> filtrarPorTipo(string tipo);
+      vector<Filme*> filtrarConsulta(string consulta);
 
 };
 #endif 

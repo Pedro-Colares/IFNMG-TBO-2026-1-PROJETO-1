@@ -19,15 +19,15 @@ void Cinema::setNome(string nome){
     this->nome = nome;
 }
 
-int Cinema:::getX(){
-    return x;
+int Cinema::getX(){
+    return coordenada_x;
 }
 void Cinema::setX(int x){
     coordenada_x = x;
 }
 
 int Cinema::getY(){
-    return y;
+    return coordenada_y;
 }
 void Cinema::setY(int y){
     coordenada_y = y;
