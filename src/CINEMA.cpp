@@ -19,7 +19,7 @@ void Cinema::setNome(string nome){
     this->nome = nome;
 }
 
-int Cinema:::getX(){
+int Cinema::getX(){
     return x;
 }
 void Cinema::setX(int x){
