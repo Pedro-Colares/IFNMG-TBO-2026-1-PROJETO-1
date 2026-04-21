@@ -21,8 +21,8 @@ class Cinemas{
       vector<Cinema*>filtrarPorPreco(double max);
       vector<Cinema*>filtrarPorDistancia(int x, int y, int distanciaMaxima);
 
-      vector<Cinema*>filtrarPorGereno(string genero, Filmes& filmes);
-      vector<Cinema*>filtrarporTipo(string tipo, Filmes& filmes);
+      vector<Cinema*>filtrarPorGenero(string genero, Filmes& filmes);
+      vector<Cinema*>filtrarPorTipo(string tipo, Filmes& filmes);
       vector<Cinema*>filtrarPorAno(int min, int max, Filmes& filmes);
       vector<Cinema*>filtrarPorDuracao(int min, int max, Filmes& filmes);
 

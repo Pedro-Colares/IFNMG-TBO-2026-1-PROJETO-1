@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Cinemas::Cinemas();
+Cinemas::Cinemas(){}
 Cinemas::~Cinemas(){
     for(int i=0; i<lista.size(); i++){
         delete lista[i];
@@ -24,24 +24,23 @@ void Cinemas::carregar(string arquivo){
     }
 
     while(getline(file, linha)){
-        if(line.empty) continue;
+        if(linha.empty()) continue;
         stringstream ss(linha);
         string id, nome, xStr, yStr, precoStr, filmesStr;
 
         getline(ss, id, '\t');
         getline(ss, nome, '\t');
         getline(ss, xStr, '\t');
-        getline(ss, isAdultStr, '\t');
         getline(ss, yStr, '\t');
         getline(ss, precoStr, '\t');
-        getline(ss, filmes, '\t');
+        getline(ss, filmesStr, '\t');
 
         Cinema* c = new Cinema();
         c->setId(id);
         c->setNome(nome);
-        c->setCoordenadaX(stoi(xStr));
-        c->setCoordenadaY(stoi(yStr));
-        c->setPrecoIngresso(stod(precoStr));
+        c->setX(stoi(xStr));
+        c->setY(stoi(yStr));
+        c->setPreco(stod(precoStr));
         
         stringstream ssFilmes(filmesStr);
         string filmeId;
@@ -51,13 +50,13 @@ void Cinemas::carregar(string arquivo){
         }
         lista.push_back(c);
     }
-    file.close(c);
+    file.close();
 }
 
 vector<Cinema*> Cinemas::filtrarPorPreco(double max){
     vector<Cinema*>resultado;
     for(Cinema* c: lista){
-        if(c->getPreco <= max){
+        if(c->getPreco() <= max){
             resultado.push_back(c);
         }
     }
@@ -65,11 +64,11 @@ vector<Cinema*> Cinemas::filtrarPorPreco(double max){
     return resultado;
 }
 
-vector<cinema*> Cinemas::filtrarPorDistancia(int x, int y, int distanciaMaxima){
+vector<Cinema*> Cinemas::filtrarPorDistancia(int x, int y, int distanciaMaxima){
     vector<Cinema*>resultado;
     for(Cinema* c: lista){
-        int distanciaX = c->getX - x;
-        int distanciaY = c->getY - y;
+        int distanciaX = c->getX() - x;
+        int distanciaY = c->getY() - y;
         double distancia = sqrt(distanciaX*distanciaX + distanciaY*distanciaY);
 
         if(distancia <= distanciaMaxima){

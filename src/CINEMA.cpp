@@ -1,4 +1,4 @@
-#include "CINEMA.H"
+#include "CINEMA.h"
 
 using namespace std;
 
