@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <unordered_set>
 
 using namespace std;
 
@@ -127,15 +128,12 @@ vector<Filme*> Filmes::filtrarPorDuracao(int min, int max){
     return resultado;
 }
 
-vector<Filme*> intersecao(vector<Filme*> a, vector<Filme*> b){
+vector<Filme*> Filmes::intersecao(vector<Filme*> a, vector<Filme*> b){
     vector<Filme*> resultado;
-
-    for(Filme* f1 : a){
-        for(Filme* f2 : b){
-            if(f1 == f2){
-                resultado.push_back(f1);
-                break;
-            }
+    unordered_set<Filme*> setB(b.begin(), b.end());
+    for(Filme* f : a){
+        if(setB.count(f)){
+            resultado.push_back(f);
         }
     }
 
@@ -143,25 +141,13 @@ vector<Filme*> intersecao(vector<Filme*> a, vector<Filme*> b){
 }
 
 
-vector<Filme*> uniao(vector<Filme*> a, vector<Filme*> b){
-    vector<Filme*> resultado = a;
-
+vector<Filme*> Filmes::uniao(vector<Filme*> a, vector<Filme*> b){
+    unordered_set<Filme*> setRes(a.begin(), a.end());
     for(Filme* f : b){
-        bool existe = false;
-
-        for(Filme* r : resultado){
-            if(r == f){
-                existe = true;
-                break;
-            }
-        }
-
-        if(!existe){
-            resultado.push_back(f);
-        }
+        setRes.insert(f);
     }
 
-    return resultado;
+    return vector<Filme*>(setRes.begin(), setRes.end());
 }
 
 vector<Filme*> Filmes::filtrarConsulta(string consulta){
@@ -175,20 +161,59 @@ vector<Filme*> Filmes::filtrarConsulta(string consulta){
         tokens.push_back(token);
     }
 
+    if(tokens.empty()) return {};
+
+    vector<Filme*> resultado;
+
     // primeiro filtro
-    vector<Filme*> resultado = filtrarPorGenero(tokens[0]);
+    int pos0 = tokens[0].find(":");
+    if(pos0 == string::npos) return {};
+
+    string chave0 = tokens[0].substr(0, pos0);
+    string valor0 = tokens[0].substr(pos0 + 1);
+
+    if(chave0 == "genero"){
+        resultado = filtrarPorGenero(valor0);
+    }
+    else if(chave0 == "tipo"){
+        resultado = filtrarPorTipo(valor0);
+    }
+    else if(chave0 == "ano"){
+        int ano = stoi(valor0);
+        resultado = filtrarPorAno(ano, ano);
+    }
 
     // percorre operadores
     for(int i = 1; i < tokens.size(); i += 2){
+
+        if(i + 1 >= tokens.size()) break;
+
         string op = tokens[i];
-        string valor = tokens[i+1];
+        string filtroStr = tokens[i+1];
 
-        vector<Filme*> novo = filtrarPorGenero(valor);
+        int pos = filtroStr.find(":");
+        if(pos == string::npos) continue;
 
-        if(op == "&"){
+        string chave = filtroStr.substr(0, pos);
+        string valor = filtroStr.substr(pos + 1);
+
+        vector<Filme*> novo;
+
+        if(chave == "genero"){
+            novo = filtrarPorGenero(valor);
+        }
+        else if(chave == "tipo"){
+            novo = filtrarPorTipo(valor);
+        }
+        else if(chave == "ano"){
+            int ano = stoi(valor);
+            novo = filtrarPorAno(ano, ano);
+        }
+
+        if(op == "AND"){
             resultado = intersecao(resultado, novo);
         }
-        else if(op == "|"){
+        else if(op == "OR"){
             resultado = uniao(resultado, novo);
         }
     }

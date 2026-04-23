@@ -27,6 +27,8 @@ class Filmes{
       vector<Filme*> filtrarPorAno(int min, int max);
       vector<Filme*> filtrarPorDuracao(int min, int max);
       vector<Filme*> filtrarPorTipo(string tipo);
+      vector<Filme*> intersecao(vector<Filme*> a, vector<Filme*> b);
+      vector<Filme*> uniao(vector<Filme*> a, vector<Filme*> b);
       vector<Filme*> filtrarConsulta(string consulta);
 
 };
