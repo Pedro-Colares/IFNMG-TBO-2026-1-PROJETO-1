@@ -10,7 +10,7 @@ int main(){
     filmes.carregar("data/filmesCrop.txt");
     cout << "FUNCIONANDO" << endl;
 
-    Filme* f = filmes.buscarPorId("tt7917516");
+    Filme* f = filmes.buscarPorId("tt7917518");
 
 if(f != nullptr){
     cout << "Filme encontrado!" << endl;
