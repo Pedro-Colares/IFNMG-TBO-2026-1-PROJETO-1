@@ -30,6 +30,11 @@ class Filmes{
       vector<Filme*> intersecao(vector<Filme*> a, vector<Filme*> b);
       vector<Filme*> uniao(vector<Filme*> a, vector<Filme*> b);
       vector<Filme*> filtrarConsulta(string consulta);
+      vector<string> tokenizar(string s);
+      vector<string> paraPosfixa(vector<string> tokens);
+      vector<Filme*> avaliarPosfixa(vector<string> posfixa);
+      int prioridade(string op);
+      vector<Filme*> aplicarFiltro(string palavra);
 
 };
 #endif 
