@@ -15,9 +15,8 @@ class Controller{
         Controller(Filmes& f, Cinemas& c);
         ~Controller();
 
-        vector<Filme*>consultarFilmes(string consulta);
-        vector<Cinema*>consultarCinemas();
-
+        void consultaFilmes();
+        void consultaCinemas();
         void executar();
 };
 #endif

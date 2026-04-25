@@ -1,4 +1,3 @@
-// Filmes.cpp
 #include "Filmes.h"
 #include <fstream>
 #include <sstream>
@@ -45,17 +44,17 @@ void Filmes::carregar(string arquivo){
         string id, tipo, titulo, originalTitulo, isAdultStr,
                anoStr, endYearStr, duracaoStr, generosStr;
 
-        getline(ss, id,             '\t');
-        getline(ss, tipo,           '\t');
-        getline(ss, titulo,         '\t');
+        getline(ss, id, '\t');
+        getline(ss, tipo, '\t');
+        getline(ss, titulo, '\t');
         getline(ss, originalTitulo, '\t'); // coluna 4 — não usada, mas precisa ser consumida
-        getline(ss, isAdultStr,     '\t');
-        getline(ss, anoStr,         '\t');
-        getline(ss, endYearStr,     '\t');
-        getline(ss, duracaoStr,     '\t');
+        getline(ss, isAdultStr, '\t');
+        getline(ss, anoStr, '\t');
+        getline(ss, endYearStr, '\t');
+        getline(ss, duracaoStr, '\t');
         getline(ss, generosStr);           
 
-        tipo       = limpar(tipo);
+        tipo = limpar(tipo);
         generosStr = limpar(generosStr);
 
         if(id.size() < 3) continue;
@@ -71,9 +70,9 @@ void Filmes::carregar(string arquivo){
         f->setTipo(tipo);
         f->setTitulo(titulo);
         f->setIsAdult(isAdultStr == "1");
-        f->setStartYear((anoStr      == "\\N" || anoStr.empty())    ? 0 : stoi(anoStr));
-        f->setEndYear ((endYearStr   == "\\N" || endYearStr.empty()) ? 0 : stoi(endYearStr));
-        f->setDuracao ((duracaoStr   == "\\N" || duracaoStr.empty()) ? 0 : stoi(duracaoStr));
+        f->setStartYear((anoStr == "\\N" || anoStr.empty()) ? 0 : stoi(anoStr));
+        f->setEndYear ((endYearStr == "\\N" || endYearStr.empty()) ? 0 : stoi(endYearStr));
+        f->setDuracao ((duracaoStr == "\\N" || duracaoStr.empty()) ? 0 : stoi(duracaoStr));
 
         if(idNumerico >= (int)listaDireta.size()){
             listaDireta.resize(idNumerico + 1, nullptr);
@@ -194,14 +193,14 @@ vector<Filme*> Filmes::aplicarFiltro(string palavra){
     }
 
     if(mapaGenero.count(palavra)) return filtrarPorGenero(palavra);
-    if(mapaTipo.count(palavra))   return filtrarPorTipo(palavra);
+    if(mapaTipo.count(palavra)) return filtrarPorTipo(palavra);
     return {};
 }
 
 vector<Filme*> Filmes::avaliarConsultaSimples(vector<string> tokens){
 
     stack<vector<Filme*>> pilhaResultados;
-    stack<string>         pilhaOperadores;
+    stack<string> pilhaOperadores;
 
     pilhaResultados.push({});
     pilhaOperadores.push("&");
