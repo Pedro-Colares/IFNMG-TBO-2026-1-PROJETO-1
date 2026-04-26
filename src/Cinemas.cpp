@@ -15,7 +15,7 @@ string Cinemas::limpar(string s){
 Cinemas::Cinemas(){}
 
 Cinemas::~Cinemas(){
-    for(auto c: lista) delete c;
+    for(Cinema* c: lista) delete c;
 }
 
 vector<Cinema*> Cinemas::getTodos(){
@@ -79,7 +79,7 @@ Cinema* Cinemas::buscarPorIdMaisProximo(string id){
     Cinema* melhor = nullptr;
     double melhorDist = 1e18;
 
-    for(auto c: lista){
+    for(Cinema* c: lista){
         if(c == base) continue;
 
         int dx = c->getX() - base->getX();
@@ -98,7 +98,7 @@ Cinema* Cinemas::buscarPorIdMaisProximo(string id){
 vector<Cinema*> Cinemas::filtrarPorPreco(double max){
     vector<Cinema*> resultado;
 
-    for(auto &p: indicePreco){
+    for(pair<const double, vector<Cinema*>> &p: indicePreco){
         if(p.first <= max){
             resultado.insert(resultado.end(), p.second.begin(), p.second.end());
         }
@@ -110,7 +110,7 @@ vector<Cinema*> Cinemas::filtrarPorPreco(double max){
 vector<Cinema*> Cinemas::filtrarPorDistancia(int x,int y,double distanciaMaxima){
     vector<Cinema*> resultado;
 
-    for(auto c: lista){
+    for(Cinema* c: lista){
         int dx = c->getX() - x;
         int dy = c->getY() - y;
 
@@ -125,30 +125,36 @@ Filme* buscarFilmeSeguro(Filmes& filmes, string id){
     Filme* f = filmes.buscarPorId(id);
     if(f != nullptr) return f;
 
-    int bruto = extrairNumeroId(id);
+    if(id.size() < 3) return nullptr;
+    id.erase(0, 2);
+    int bruto = stoi(id);
 
     while(bruto > 0){
-        bruto += 2;  
+        bruto += 2;
+        if(bruto > 10000000) break;
         string novoId = "tt" + to_string(bruto);
         f = filmes.buscarPorId(novoId);
         if(f != nullptr) return f;
     }
 
     return nullptr;
+}
+
 vector<Cinema*> Cinemas::buscarPorFilme(string idFilme){
     if(mapaFilme.count(idFilme)) return mapaFilme[idFilme];
     return {};
 }
 
+
 vector<Cinema*> Cinemas::filtrarPorGenero(string genero, Filmes& filmes){
     vector<Cinema*> resultado;
     unordered_set<Cinema*> usado;
 
-    for(auto &p: mapaFilme){
+    for(pair<const string, vector<Cinema*>> &p: mapaFilme){
         Filme* f = filmes.buscarPorId(p.first);
 
         if(f && f->temGenero(genero)){
-            for(auto c: p.second){
+            for(Cinema* c: p.second){
                 if(!usado.count(c)){
                     resultado.push_back(c);
                     usado.insert(c);
@@ -164,11 +170,11 @@ vector<Cinema*> Cinemas::filtrarPorTipo(string tipo, Filmes& filmes){
     vector<Cinema*> resultado;
     unordered_set<Cinema*> usado;
 
-    for(auto &p: mapaFilme){
+    for(pair<const string, vector<Cinema*>> &p: mapaFilme){
         Filme* f = filmes.buscarPorId(p.first);
 
         if(f && f->ehDoTipo(tipo)){
-            for(auto c: p.second){
+            for(Cinema* c: p.second){
                 if(!usado.count(c)){
                     resultado.push_back(c);
                     usado.insert(c);
@@ -184,11 +190,11 @@ vector<Cinema*> Cinemas::filtrarPorAno(int min,int max,Filmes& filmes){
     vector<Cinema*> resultado;
     unordered_set<Cinema*> usado;
 
-    for(auto &p: mapaFilme){
+    for(pair<const string, vector<Cinema*>> &p: mapaFilme){
         Filme* f = filmes.buscarPorId(p.first);
 
         if(f && f->estaNoIntervaloAno(min,max)){
-            for(auto c: p.second){
+            for(Cinema* c: p.second){
                 if(!usado.count(c)){
                     resultado.push_back(c);
                     usado.insert(c);
@@ -204,11 +210,11 @@ vector<Cinema*> Cinemas::filtrarPorDuracao(int min,int max,Filmes& filmes){
     vector<Cinema*> resultado;
     unordered_set<Cinema*> usado;
 
-    for(auto &p: mapaFilme){
+    for(pair<const string, vector<Cinema*>> &p: mapaFilme){
         Filme* f = filmes.buscarPorId(p.first);
 
         if(f && f->estaNoIntervaloDuracao(min,max)){
-            for(auto c: p.second){
+            for(Cinema* c: p.second){
                 if(!usado.count(c)){
                     resultado.push_back(c);
                     usado.insert(c);
@@ -224,11 +230,11 @@ vector<Cinema*> Cinemas::buscarPorGenero(string genero, Filmes& filmes){
     vector<Cinema*> resultado;
     unordered_set<Cinema*> usado;
 
-    for(auto &p: mapaFilme){
+    for(pair<const string, vector<Cinema*>> &p: mapaFilme){
         Filme* f = filmes.buscarPorId(p.first);
 
         if(f && f->temGenero(genero)){
-            for(auto c: p.second){
+            for(Cinema* c: p.second){
                 if(!usado.count(c)){
                     resultado.push_back(c);
                     usado.insert(c);
@@ -244,7 +250,7 @@ vector<Cinema*> Cinemas::intersecao(vector<Cinema*> a, vector<Cinema*> b){
     unordered_set<Cinema*> setB(b.begin(), b.end());
     vector<Cinema*> resultado;
 
-    for(auto c: a)
+    for(Cinema* c: a)
         if(setB.count(c))
             resultado.push_back(c);
 
@@ -254,7 +260,7 @@ vector<Cinema*> Cinemas::intersecao(vector<Cinema*> a, vector<Cinema*> b){
 vector<Cinema*> Cinemas::uniao(vector<Cinema*> a, vector<Cinema*> b){
     unordered_set<Cinema*> s(a.begin(), a.end());
 
-    for(auto c: b)
+    for(Cinema* c: b)
         s.insert(c);
 
     return vector<Cinema*>(s.begin(), s.end());

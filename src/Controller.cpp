@@ -125,7 +125,7 @@ void Controller::consultaCinemas(){
                     cout << c->getNome() << endl;
                 }
 
-                auto fim = steady_clock::now();
+                auto fim = high_resolution_clock::now();
 
                 cout << "Tempo da busca: "
                 << duration_cast<milliseconds>(fim - inicio).count()
