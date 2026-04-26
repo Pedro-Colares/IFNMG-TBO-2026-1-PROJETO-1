@@ -68,18 +68,20 @@ void Controller::consultaFilmes(){
             }
 
             case 5:{
-                auto inicio = high_resolution_clock::now();
+                auto inicio = steady_clock::now();
 
                 cout << "\nTotal: " << resultado.size() << endl;
                 for(Filme* f : resultado){
                     cout << f->getTitulo() << endl;
                 }
 
-                auto fim = high_resolution_clock::now();
+                auto fim = steady_clock::now();
+
                 cout << "Tempo da busca: "
-                     << duration_cast<milliseconds>(fim - inicio).count()
-                     << " ms\n";
-                continue;
+                << duration_cast<milliseconds>(fim - inicio).count()
+                << " ms\n";
+
+               continue;
             }
 
             case 0:
@@ -206,23 +208,24 @@ void Controller::consultaCinemas(){
             }
 
             case 8:{
-                auto inicio = high_resolution_clock::now();
+                auto inicio = steady_clock::now();
 
                 cout << "\nTotal: " << resultado.size() << endl;
                 for(Cinema* c : resultado){
                     cout << c->getNome() << endl;
                 }
- 
-                auto fim = high_resolution_clock::now();
+
+                auto fim = steady_clock::now();
+
                 cout << "Tempo da busca: "
                 << duration_cast<milliseconds>(fim - inicio).count()
                 << " ms\n";
 
-               cout << "\nPressione Enter para continuar...";
-               cin.ignore();
-               cin.get();
+                cout << "\nPressione Enter para continuar...";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
 
-               continue;
+                continue;
             }
 
             case 0:
