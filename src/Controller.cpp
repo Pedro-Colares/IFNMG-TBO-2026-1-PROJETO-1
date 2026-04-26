@@ -125,10 +125,15 @@ void Controller::consultaCinemas(){
                     cout << c->getNome() << endl;
                 }
 
-                auto fim = high_resolution_clock::now();
+                auto fim = steady_clock::now();
+
                 cout << "Tempo da busca: "
-                     << duration_cast<milliseconds>(fim - inicio).count()
-                     << " ms\n";
+                << duration_cast<milliseconds>(fim - inicio).count()
+                << " ms\n";
+
+                cout << "\nPressione Enter para continuar...";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
 
                 continue;
             }
@@ -146,7 +151,7 @@ void Controller::consultaCinemas(){
              << duration_cast<milliseconds>(fim - inicio).count()
              << " ms\n";
 
-        if(escolha >= 1 && escolha <= 4){
+        if(escolha >= 1 && escolha <= 7){
 
             if(primeiraConsulta){
                 resultado = mt;
