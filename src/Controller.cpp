@@ -10,110 +10,22 @@ Controller::~Controller(){}
 
 
 void Controller::consultaFilmes(){
-    vector<Filme*> resultado;
-    bool primeiraConsulta = true;
-    int escolha;
+    string query;
+    cout << "Digite a query (ex: Drama & ano:1990-1999): ";
+    getline(cin, query);
 
-    do{
-        cout <<"\n----- FILMES -----\n";
-        cout <<"1 - Filtrar por Genero\n";
-        cout <<"2 - Filtrar por Tipo\n";
-        cout <<"3 - Filtrar por Duracao\n";
-        cout <<"4 - Filtrar por Ano\n";
-        cout <<"5 - Mostrar Resultado\n";
-        cout <<"0 - Voltar\n";
+    auto inicio = high_resolution_clock::now();
+    vector<Filme*> resultado = filmes.filtrarConsulta(query);
+    auto fim = high_resolution_clock::now();
 
-        cout <<"Escolha: ";
-        cin >> escolha;
+    cout << "Tempo: "
+         << duration_cast<milliseconds>(fim - inicio).count()
+         << " ms\n";
 
-        vector<Filme*> m;
-        auto inicio = high_resolution_clock::now();
-
-        switch(escolha){
-
-            case 1:{
-                string genero;
-                cout <<"Digite o genero: ";
-                cin >> genero;
-                m = filmes.filtrarPorGenero(genero);
-                break;
-            }
-
-            case 2:{
-                string tipo;
-                cout <<"Digite o tipo: ";
-                cin >> tipo;
-                m = filmes.filtrarPorTipo(tipo);
-                break;
-            }
-
-            case 3:{
-                int min, max;
-                cout <<"Duracao minima: ";
-                cin >> min;
-                cout <<"Duracao maxima: ";
-                cin >> max;
-                m = filmes.filtrarPorDuracao(min, max);
-                break;
-            }
-
-            case 4:{
-                int min, max;
-                cout <<"Ano minimo: ";
-                cin >> min;
-                cout <<"Ano maximo: ";
-                cin >> max;
-                m = filmes.filtrarPorAno(min, max);
-                break;
-            }
-
-            case 5:{
-                auto inicio = high_resolution_clock::now();
-
-                cout << "\nTotal: " << resultado.size() << endl;
-                for(Filme* f : resultado){
-                    cout << f->getTitulo() << endl;
-                }
-
-                auto fim = high_resolution_clock::now();
-                cout << "Tempo da busca: "
-                     << duration_cast<milliseconds>(fim - inicio).count()
-                     << " ms\n";
-                continue;
-            }
-
-            case 0:
-                cout << "Voltando...\n";
-                break;
-
-            default:
-                cout << "Opcao invalida!\n";
-        }
-
-        auto fim = high_resolution_clock::now();
-        cout << "Tempo do filtro: "
-             << duration_cast<milliseconds>(fim - inicio).count()
-             << " ms\n";
-
-        if(escolha >= 1 && escolha <= 4){
-
-            if(primeiraConsulta){
-                resultado = m;
-                primeiraConsulta = false;
-            } 
-            else{
-                int modo;
-                cout << "1 - AND\n2 - OR\nEscolha: ";
-                cin >> modo;
-
-                if(modo == 1)
-                    resultado = filmes.intersecao(resultado, m);
-                else
-                    resultado = filmes.uniao(resultado, m);
-            }
-        }
-
-    }while(escolha != 0);
+    cout << "\nTotal: " << resultado.size() << "\n";
+    for(Filme* f : resultado){
+        cout << f->getTitulo() << "\n";
+    }
 }
 
 void Controller::consultaCinemas(){
@@ -206,7 +118,7 @@ void Controller::consultaCinemas(){
             }
 
             case 8:{
-                auto inicio = high_resolution_clock::now();
+                inicio = high_resolution_clock::now();
 
                 cout << "\nTotal: " << resultado.size() << endl;
                 for(Cinema* c : resultado){

@@ -115,15 +115,13 @@ vector<Cinema*> Cinemas::filtrarPorDistancia(int x, int y, int distanciaMaxima){
 
 Filme* buscarFilmeSeguro(Filmes& filmes, string id){
     Filme* f = filmes.buscarPorId(id);
-
     if(f != nullptr) return f;
 
     int bruto = extrairNumeroId(id);
 
     while(bruto > 0){
-        bruto -= 2;
+        bruto += 2;  
         string novoId = "tt" + to_string(bruto);
-
         f = filmes.buscarPorId(novoId);
         if(f != nullptr) return f;
     }
