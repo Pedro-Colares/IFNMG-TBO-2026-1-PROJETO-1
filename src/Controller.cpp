@@ -212,13 +212,17 @@ void Controller::consultaCinemas(){
                 for(Cinema* c : resultado){
                     cout << c->getNome() << endl;
                 }
-
+ 
                 auto fim = high_resolution_clock::now();
                 cout << "Tempo da busca: "
-                     << duration_cast<milliseconds>(fim - inicio).count()
-                     << " ms\n";
+                << duration_cast<milliseconds>(fim - inicio).count()
+                << " ms\n";
 
-                continue;
+               cout << "\nPressione Enter para continuar...";
+               cin.ignore();
+               cin.get();
+
+               continue;
             }
 
             case 0:
@@ -234,7 +238,7 @@ void Controller::consultaCinemas(){
              << duration_cast<milliseconds>(fim - inicio).count()
              << " ms\n";
 
-        if(escolha >= 1 && escolha <= 4){
+        if(escolha >= 1 && escolha <= 7){
 
             if(primeiraConsulta){
                 resultado = mt;
