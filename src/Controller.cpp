@@ -1,6 +1,7 @@
 #include "Controller.h"
 #include<iostream>
 #include<chrono>
+#include<limits>
 
 using namespace std;
 using namespace chrono;
@@ -11,7 +12,7 @@ Controller::~Controller(){}
 
 void Controller::consultaFilmes(){
     string query;
-    cout << "Digite a query (ex: Drama & ano:1990-1999): ";
+    cout << "Digite a query (ex: Drama & ano:1990-1999): " << flush;
     getline(cin, query);
 
     auto inicio = high_resolution_clock::now();
@@ -29,27 +30,24 @@ void Controller::consultaFilmes(){
 }
 
 void Controller::consultaCinemas(){
-    vector<Cinema*>resultado;
-    bool primeiraConsulta = true;
-    int escolha;
-    do{
-        cout <<"\n ----- CINEMAS -----\n";
-        cout << "1 - Genero\n";
-        cout << "2 - Tipo\n";
-        cout << "3 - Duracao\n";
-        cout << "4 - Ano\n";
-        cout << "5 - Distancia\n";
-        cout << "6 - Preco\n";
-        cout << "7 - Buscar por filme\n";
-        cout << "8 - Mostrar resultado\n";
-        cout << "0 - Voltar\n";
+    string query;
+    cout << "Digite a query (ex: Drama & preco:20): " << flush;
+    getline(cin, query);
 
-        cout << "Escolha: ";
-        cin >> escolha;
+    auto inicio = high_resolution_clock::now();
+    vector<Cinema*> resultado = cinemas.filtrarConsulta(query, filmes);
+    auto fim = high_resolution_clock::now();
 
-        vector<Cinema*> mt;
-        auto inicio = high_resolution_clock::now();
+    cout << "Tempo: "
+         << duration_cast<milliseconds>(fim - inicio).count()
+         << " ms\n";
 
+<<<<<<< HEAD
+    cout << "\nTotal: " << resultado.size() << "\n";
+    for(Cinema* c : resultado){
+        cout << c->getNome() << "\n";
+    }
+=======
         switch(escolha){
 
             case 1:{
@@ -171,6 +169,7 @@ void Controller::consultaCinemas(){
         }
 
     }while(escolha != 0);
+>>>>>>> a3b3120b435886469edb979963c6dcb204988866
 }
 
 void Controller::executar(){

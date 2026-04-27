@@ -3,7 +3,8 @@
 
 #include <vector>
 #include <string>
-#include <unordered_map>
+#include <map>
+#include <unordered_set>
 #include "CINEMA.h"
 #include "FILME.h"
 #include "Filmes.h"
@@ -16,15 +17,21 @@ class Cinemas{
 private:
     vector<Cinema*> lista;
     unordered_map<string, Cinema*> mapa;
+    map<double, vector<Cinema*>> indicePreco;
     unordered_map<string, vector<Cinema*>> mapaFilme;
-    unordered_map<double, vector<Cinema*>> indicePreco;
+    unordered_map<string, unordered_set<Cinema*>> mapaGenero;
+    unordered_map<string, unordered_set<Cinema*>> mapaTipo;
+
+    unordered_map<long long, vector<Cinema*>> grade;
+    int TAM = 1000;
+
     string limpar(string s);
 
 public:
     Cinemas();
     ~Cinemas();
 
-    void carregar(string arquivo);
+    void carregar(string arquivo, Filmes& filmes);
 
     Cinema* buscarPorId(string id);
     Cinema* buscarPorIdMaisProximo(string id);
@@ -38,7 +45,9 @@ public:
     vector<Cinema*> filtrarPorDuracao(int min, int max, Filmes& filmes);
     vector<Cinema*> intersecao(vector<Cinema*> a, vector<Cinema*> b);
     vector<Cinema*> uniao(vector<Cinema*> a, vector<Cinema*> b);
-    vector<Cinema*> buscarPorGenero(string genero, Filmes& filmes);
+    vector<Cinema*> filtrarConsulta(string consulta, Filmes& filmes);
+    vector<string> tokenizar(string s);
+    vector<Cinema*> avaliarConsultaSimples(vector<string> tokens, Filmes& filmes);
+    vector<Cinema*> aplicarFiltro(string palavra, Filmes& filmes);
 };
-
 #endif

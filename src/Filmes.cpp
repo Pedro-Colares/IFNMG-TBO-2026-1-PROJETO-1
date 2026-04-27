@@ -101,6 +101,28 @@ void Filmes::carregar(string arquivo){
     file.close();
 }
 
+Filme* Filmes::buscarMaisProximo(string id){
+    if(id.size() < 3) return nullptr;
+
+    id.erase(0, 2); 
+
+    if(id.empty()) return nullptr;
+
+    int bruto = stoi(id);
+
+    while(true){
+        if(bruto % 2 == 0){
+            int idx = bruto / 2;
+
+            if(idx >= 0 && idx < (int)listaDireta.size()){
+                if(listaDireta[idx] != nullptr)
+                    return listaDireta[idx];
+            }
+        }
+        bruto++;
+    }
+}
+
 Filme* Filmes::buscarPorId(string id){
     if(id.size() < 3) return nullptr;
     id.erase(0, 2);

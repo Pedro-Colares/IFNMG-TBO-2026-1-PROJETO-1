@@ -17,7 +17,7 @@ int main() {
     auto inicio = high_resolution_clock::now();
 
     filmes.carregar("data/filmesCrop.txt");
-    cinemas.carregar("data/cinemas(1).txt"); 
+    cinemas.carregar("data/cinemas(1).txt", filmes);
 
     auto fim = high_resolution_clock::now();
 
