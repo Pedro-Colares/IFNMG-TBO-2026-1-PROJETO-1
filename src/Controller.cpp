@@ -18,14 +18,14 @@ void Controller::consultaFilmes(){
     vector<Filme*> resultado = filmes.filtrarConsulta(query);
     auto fim = high_resolution_clock::now();
 
-    cout << "Tempo: "
-         << duration_cast<milliseconds>(fim - inicio).count()
-         << " ms\n";
-
     cout << "\nTotal: " << resultado.size() << "\n";
     for(Filme* f : resultado){
         cout << f->getTitulo() << "\n";
     }
+
+    cout << "Tempo: "
+     << duration_cast<milliseconds>(fim - inicio).count()
+     << " ms\n";
 }
 
 void Controller::consultaCinemas(){
