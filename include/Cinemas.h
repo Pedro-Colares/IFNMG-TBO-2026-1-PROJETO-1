@@ -34,7 +34,6 @@ public:
     void carregar(string arquivo, Filmes& filmes);
 
     Cinema* buscarPorId(string id);
-    Cinema* buscarPorIdMaisProximo(string id);
     vector<Cinema*> getTodos();
     vector<Cinema*> buscarPorFilme(string idFilme);
     vector<Cinema*> filtrarPorPreco(double max);

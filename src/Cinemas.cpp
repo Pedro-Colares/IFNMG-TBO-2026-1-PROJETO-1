@@ -92,28 +92,7 @@ Cinema* Cinemas::buscarPorId(string id){
     return nullptr;
 }
 
-Cinema* Cinemas::buscarPorIdMaisProximo(string id){
-    Cinema* base = buscarPorId(id);
-    if(!base) return nullptr;
 
-    Cinema* melhor = nullptr;
-    double melhorDist = 1e18;
-
-    for(Cinema* c: lista){
-        if(c == base) continue;
-
-        int dx = c->getX() - base->getX();
-        int dy = c->getY() - base->getY();
-        double dist = sqrt(dx*dx + dy*dy);
-
-        if(dist < melhorDist){
-            melhorDist = dist;
-            melhor = c;
-        }
-    }
-
-    return melhor;
-}
 
 vector<Cinema*> Cinemas::filtrarPorPreco(double max){
     vector<Cinema*> resultado;
@@ -127,15 +106,33 @@ vector<Cinema*> Cinemas::filtrarPorPreco(double max){
     return resultado;
 }
 
-vector<Cinema*> Cinemas::filtrarPorDistancia(int x,int y,double distanciaMaxima){
+vector<Cinema*> Cinemas::filtrarPorDistancia(int x, int y, double distanciaMaxima){
     vector<Cinema*> resultado;
 
-    for(auto c: lista){
-        int dx = c->getX() - x;
-        int dy = c->getY() - y;
+    int bx = x / TAM;
+    int by = y / TAM;
 
-        if(sqrt(dx*dx + dy*dy) <= distanciaMaxima)
-            resultado.push_back(c);
+    int raioBlocos = distanciaMaxima / TAM + 1;
+
+    for(int i = -raioBlocos; i <= raioBlocos; i++){
+        for(int j = -raioBlocos; j <= raioBlocos; j++){
+
+            long long chave = (long long)(bx + i) * 100000 + (by + j);
+
+            if(grade.count(chave)){
+                for(Cinema* c : grade[chave]){
+
+                    int dx = c->getX() - x;
+                    int dy = c->getY() - y;
+
+                    double dist = sqrt(dx*dx + dy*dy);
+
+                    if(dist <= distanciaMaxima){
+                        resultado.push_back(c);
+                    }
+                }
+            }
+        }
     }
 
     return resultado;
