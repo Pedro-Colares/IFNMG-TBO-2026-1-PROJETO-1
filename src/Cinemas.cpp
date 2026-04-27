@@ -16,7 +16,7 @@ string Cinemas::limpar(string s){
 Cinemas::Cinemas(){}
 
 Cinemas::~Cinemas(){
-    for(auto c: lista) delete c;
+    for(Cinema* c: lista) delete c;
 }
 
 vector<Cinema*> Cinemas::getTodos(){
@@ -99,7 +99,7 @@ Cinema* Cinemas::buscarPorIdMaisProximo(string id){
     Cinema* melhor = nullptr;
     double melhorDist = 1e18;
 
-    for(auto c: lista){
+    for(Cinema* c: lista){
         if(c == base) continue;
 
         int dx = c->getX() - base->getX();
@@ -118,8 +118,10 @@ Cinema* Cinemas::buscarPorIdMaisProximo(string id){
 vector<Cinema*> Cinemas::filtrarPorPreco(double max){
     vector<Cinema*> resultado;
 
-    for(auto it = indicePreco.begin(); it != indicePreco.upper_bound(max); ++it){
-        resultado.insert(resultado.end(), it->second.begin(), it->second.end());
+    for(pair<const double, vector<Cinema*>> &p: indicePreco){
+        if(p.first <= max){
+            resultado.insert(resultado.end(), p.second.begin(), p.second.end());
+        }
     }
 
     return resultado;
@@ -128,27 +130,12 @@ vector<Cinema*> Cinemas::filtrarPorPreco(double max){
 vector<Cinema*> Cinemas::filtrarPorDistancia(int x,int y,double distanciaMaxima){
     vector<Cinema*> resultado;
 
-    int raio = distanciaMaxima / TAM + 1;
-    int bx = x / TAM;
-    int by = y / TAM;
+    for(auto c: lista){
+        int dx = c->getX() - x;
+        int dy = c->getY() - y;
 
-    long long maxDist2 = distanciaMaxima * distanciaMaxima;
-
-    for(int dx = -raio; dx <= raio; dx++){
-        for(int dy = -raio; dy <= raio; dy++){
-            long long chave = (long long)(bx+dx) * 100000 + (by+dy);
-
-            if(grade.count(chave)){
-                for(auto c: grade[chave]){
-                    long long dx2 = c->getX() - x;
-                    long long dy2 = c->getY() - y;
-                    long long dist2 = dx2*dx2 + dy2*dy2;
-
-                    if(dist2 <= maxDist2)
-                        resultado.push_back(c);
-                }
-            }
-        }
+        if(sqrt(dx*dx + dy*dy) <= distanciaMaxima)
+            resultado.push_back(c);
     }
 
     return resultado;
@@ -159,33 +146,56 @@ vector<Cinema*> Cinemas::buscarPorFilme(string idFilme){
     return {};
 }
 
+
 vector<Cinema*> Cinemas::filtrarPorGenero(string genero, Filmes& filmes){
-    if(!mapaGenero.count(genero)) return {};
-
-    return vector<Cinema*>(
-        mapaGenero[genero].begin(),
-        mapaGenero[genero].end()
-    );
-}
-
-vector<Cinema*> Cinemas::filtrarPorTipo(string tipo, Filmes& filmes){
-    if(!mapaTipo.count(tipo))
-        return {};
-    return vector<Cinema*>(
-        mapaTipo[tipo].begin(),
-        mapaTipo[tipo].end()
-    );
-}
-
-vector<Cinema*> Cinemas::filtrarPorAno(int min,int max,Filmes& filmes){
     vector<Cinema*> resultado;
     unordered_set<Cinema*> usado;
 
     for(auto &p: mapaFilme){
         Filme* f = filmes.buscarPorId(p.first);
 
-        if(f && f->estaNoIntervaloAno(min,max)){
+        if(f && f->temGenero(genero)){
             for(auto c: p.second){
+                if(!usado.count(c)){
+                    resultado.push_back(c);
+                    usado.insert(c);
+                }
+            }
+        }
+    }
+
+    return resultado;
+}
+
+vector<Cinema*> Cinemas::filtrarPorTipo(string tipo, Filmes& filmes){
+    vector<Cinema*> resultado;
+    unordered_set<Cinema*> usado;
+
+    for(auto &p: mapaFilme){
+        Filme* f = filmes.buscarPorId(p.first);
+
+        if(f && f->ehDoTipo(tipo)){
+            for(auto c: p.second){
+                if(!usado.count(c)){
+                    resultado.push_back(c);
+                    usado.insert(c);
+                }
+            }
+        }
+    }
+
+    return resultado;
+}
+
+vector<Cinema*> Cinemas::filtrarPorAno(int min,int max,Filmes& filmes){
+    vector<Cinema*> resultado;
+    unordered_set<Cinema*> usado;
+
+    for(pair<const string, vector<Cinema*>> &p: mapaFilme){
+        Filme* f = filmes.buscarPorId(p.first);
+
+        if(f && f->estaNoIntervaloAno(min,max)){
+            for(Cinema* c: p.second){
                 if(!usado.count(c)){
                     resultado.push_back(c);
                     usado.insert(c);
@@ -201,11 +211,11 @@ vector<Cinema*> Cinemas::filtrarPorDuracao(int min,int max,Filmes& filmes){
     vector<Cinema*> resultado;
     unordered_set<Cinema*> usado;
 
-    for(auto &p: mapaFilme){
+    for(pair<const string, vector<Cinema*>> &p: mapaFilme){
         Filme* f = filmes.buscarPorId(p.first);
 
         if(f && f->estaNoIntervaloDuracao(min,max)){
-            for(auto c: p.second){
+            for(Cinema* c: p.second){
                 if(!usado.count(c)){
                     resultado.push_back(c);
                     usado.insert(c);
@@ -221,7 +231,7 @@ vector<Cinema*> Cinemas::intersecao(vector<Cinema*> a, vector<Cinema*> b){
     unordered_set<Cinema*> setB(b.begin(), b.end());
     vector<Cinema*> resultado;
 
-    for(auto c: a)
+    for(Cinema* c: a)
         if(setB.count(c))
             resultado.push_back(c);
 
@@ -231,7 +241,7 @@ vector<Cinema*> Cinemas::intersecao(vector<Cinema*> a, vector<Cinema*> b){
 vector<Cinema*> Cinemas::uniao(vector<Cinema*> a, vector<Cinema*> b){
     unordered_set<Cinema*> s(a.begin(), a.end());
 
-    for(auto c: b)
+    for(Cinema* c: b)
         s.insert(c);
 
     return vector<Cinema*>(s.begin(), s.end());

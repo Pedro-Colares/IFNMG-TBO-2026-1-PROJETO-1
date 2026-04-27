@@ -11,6 +11,8 @@
 
 using namespace std;
 
+
+
 class Cinemas{
 private:
     vector<Cinema*> lista;
@@ -32,21 +34,15 @@ public:
     void carregar(string arquivo, Filmes& filmes);
 
     Cinema* buscarPorId(string id);
-
     Cinema* buscarPorIdMaisProximo(string id);
-
     vector<Cinema*> getTodos();
-
     vector<Cinema*> buscarPorFilme(string idFilme);
-
     vector<Cinema*> filtrarPorPreco(double max);
     vector<Cinema*> filtrarPorDistancia(int x, int y, double maxDist);
-
     vector<Cinema*> filtrarPorGenero(string genero, Filmes& filmes);
     vector<Cinema*> filtrarPorTipo(string tipo, Filmes& filmes);
     vector<Cinema*> filtrarPorAno(int min, int max, Filmes& filmes);
     vector<Cinema*> filtrarPorDuracao(int min, int max, Filmes& filmes);
-
     vector<Cinema*> intersecao(vector<Cinema*> a, vector<Cinema*> b);
     vector<Cinema*> uniao(vector<Cinema*> a, vector<Cinema*> b);
     vector<Cinema*> filtrarConsulta(string consulta, Filmes& filmes);
