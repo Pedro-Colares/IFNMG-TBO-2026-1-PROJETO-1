@@ -1,6 +1,7 @@
 #include "Controller.h"
 #include<iostream>
 #include<chrono>
+#include<limits>
 
 using namespace std;
 using namespace chrono;
@@ -11,7 +12,7 @@ Controller::~Controller(){}
 
 void Controller::consultaFilmes(){
     string query;
-    cout << "Digite a query (ex: Drama & ano:1990-1999): ";
+    cout << "Digite a query (ex: Drama & ano:1990-1999): " << flush;
     getline(cin, query);
 
     auto inicio = high_resolution_clock::now();
@@ -29,148 +30,22 @@ void Controller::consultaFilmes(){
 }
 
 void Controller::consultaCinemas(){
-    vector<Cinema*>resultado;
-    bool primeiraConsulta = true;
-    int escolha;
-    do{
-        cout <<"\n ----- CINEMAS -----\n";
-        cout << "1 - Genero\n";
-        cout << "2 - Tipo\n";
-        cout << "3 - Duracao\n";
-        cout << "4 - Ano\n";
-        cout << "5 - Distancia\n";
-        cout << "6 - Preco\n";
-        cout << "7 - Buscar por filme\n";
-        cout << "8 - Mostrar resultado\n";
-        cout << "0 - Voltar\n";
+    string query;
+    cout << "Digite a query (ex: Drama & preco:20): " << flush;
+    getline(cin, query);
 
-        cout << "Escolha: ";
-        cin >> escolha;
+    auto inicio = high_resolution_clock::now();
+    vector<Cinema*> resultado = cinemas.filtrarConsulta(query, filmes);
+    auto fim = high_resolution_clock::now();
 
-        vector<Cinema*> mt;
-        auto inicio = high_resolution_clock::now();
+    cout << "Tempo: "
+         << duration_cast<milliseconds>(fim - inicio).count()
+         << " ms\n";
 
-        switch(escolha){
-
-            case 1:{
-                string genero;
-                cout <<"Digite o genero: ";
-                cin >> genero;
-                mt = cinemas.filtrarPorGenero(genero, filmes);
-                break;
-            }
-
-            case 2:{
-                string tipo;
-                cout <<"Digite o tipo: ";
-                cin >> tipo;
-                mt = cinemas.filtrarPorTipo(tipo, filmes);
-                break;
-            }
-
-            case 3:{
-                int min, max;
-                cout <<"Duracao minima: ";
-                cin >> min;
-                cout <<"Duracao maxima: ";
-                cin >> max;
-                mt = cinemas.filtrarPorDuracao(min, max, filmes);
-                break;
-            }
-
-            case 4:{
-                int min, max;
-                cout <<"Ano minimo: ";
-                cin >> min;
-                cout <<"Ano maximo: ";
-                cin >> max;
-                mt = cinemas.filtrarPorAno(min, max, filmes);
-                break;
-            }
-
-            case 5:{
-                int x, y, max;
-                cout <<"Digite a coordenada x: ";
-                cin >> x;
-                cout <<"Digite a coordenada y: ";
-                cin >> y;
-                cout <<"Distancia maxima: ";
-                cin >> max;
-                mt = cinemas.filtrarPorDistancia(x, y, max);
-                break;
-            }
-                
-
-            case 6:{
-                double max;
-                cout <<"Preco: ";
-                cin >> max;
-                mt = cinemas.filtrarPorPreco(max);
-                break;
-            }
-
-            case 7:{
-                string id;
-                cout <<"Digite o id: ";
-                cin >> id;
-                mt = cinemas.buscarPorFilme(id);
-                break;
-            }
-
-            case 8:{
-                inicio = high_resolution_clock::now();
-
-                cout << "\nTotal: " << resultado.size() << endl;
-                for(Cinema* c : resultado){
-                    cout << c->getNome() << endl;
-                }
-
-                auto fim = steady_clock::now();
-
-                cout << "Tempo da busca: "
-                << duration_cast<milliseconds>(fim - inicio).count()
-                << " ms\n";
-
-                cout << "\nPressione Enter para continuar...";
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cin.get();
-
-                continue;
-            }
-
-            case 0:
-                cout << "Voltando...\n";
-                break;
-
-            default:
-                cout << "Opcao invalida!\n";
-        }
-
-        auto fim = high_resolution_clock::now();
-        cout << "Tempo do filtro: "
-             << duration_cast<milliseconds>(fim - inicio).count()
-             << " ms\n";
-
-        if(escolha >= 1 && escolha <= 7){
-
-            if(primeiraConsulta){
-                resultado = mt;
-                primeiraConsulta = false;
-            } 
-            else{
-                int modo;
-                cout << "1 - AND\n2 - OR\nEscolha: ";
-                cin >> modo;
-
-                if(modo == 1)
-                    resultado = cinemas.intersecao(resultado, mt);
-                else
-                    resultado = cinemas.uniao(resultado, mt);
-            }
-            
-        }
-
-    }while(escolha != 0);
+    cout << "\nTotal: " << resultado.size() << "\n";
+    for(Cinema* c : resultado){
+        cout << c->getNome() << "\n";
+    }
 }
 
 void Controller::executar(){
