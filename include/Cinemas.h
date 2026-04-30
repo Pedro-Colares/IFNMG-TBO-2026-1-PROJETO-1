@@ -4,7 +4,8 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <unordered_set>
+#include "Hash.h"
+#include "HashSet.h"
 #include "CINEMA.h"
 #include "FILME.h"
 #include "Filmes.h"
@@ -16,13 +17,13 @@ using namespace std;
 class Cinemas{
 private:
     vector<Cinema*> lista;
-    unordered_map<string, Cinema*> mapa;
+    Hash<string, Cinema*> mapa;
     map<double, vector<Cinema*>> indicePreco;
-    unordered_map<string, vector<Cinema*>> mapaFilme;
-    unordered_map<string, unordered_set<Cinema*>> mapaGenero;
-    unordered_map<string, unordered_set<Cinema*>> mapaTipo;
+    Hash<string, vector<Cinema*>> mapaFilme;
+    Hash<string, HashSet<Cinema*>> mapaGenero;
+    Hash<string, HashSet<Cinema*>> mapaTipo;
 
-    unordered_map<long long, vector<Cinema*>> grade;
+    Hash<long long, vector<Cinema*>> grade;
     int TAM = 1000;
 
     string limpar(string s);
