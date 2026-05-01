@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <unordered_set>
 #include <stack>
 
 using namespace std;
@@ -84,7 +83,7 @@ void Filmes::carregar(string arquivo){
         }
 
         listaDireta[idNumerico] = f;
-        mapaTipo[tipo].push_back(f);
+        mapaTipo.getRef(tipo).push_back(f);
 
         stringstream ssGeneros(generosStr);
         string genero;
@@ -92,7 +91,7 @@ void Filmes::carregar(string arquivo){
             genero = limpar(genero);
             if(genero == "\\N" || genero.empty()) continue;
             f->addGenero(genero);
-            mapaGenero[genero].push_back(f);
+            mapaGenero.getRef(genero).push_back(f);
         }
 
         lista.push_back(f);
@@ -139,12 +138,12 @@ Filme* Filmes::buscarPorId(string id){
 }
 
 vector<Filme*> Filmes::filtrarPorGenero(string genero){
-    if(mapaGenero.count(genero)) return mapaGenero[genero];
+    if(mapaGenero.existe(genero)) return mapaGenero.getRef(genero);
     return {};
 }
 
 vector<Filme*> Filmes::filtrarPorTipo(string tipo){
-    if(mapaTipo.count(tipo)) return mapaTipo[tipo];
+    if(mapaTipo.existe(tipo)) return mapaTipo.getRef(tipo);
     return {};
 }
 
@@ -168,18 +167,26 @@ vector<Filme*> Filmes::filtrarPorDuracao(int min, int max){
 
 vector<Filme*> Filmes::intersecao(vector<Filme*> a, vector<Filme*> b){
     vector<Filme*> resultado;
-    unordered_set<Filme*> setB(b.begin(), b.end());
+    HashSet<Filme*> setB;
+    for(Filme* f : b) setB.inserir(f);
     for(Filme* f : a){
-        if(setB.count(f))
+        if(setB.existe(f))
             resultado.push_back(f);
     }
     return resultado;
 }
 
 vector<Filme*> Filmes::uniao(vector<Filme*> a, vector<Filme*> b){
-    unordered_set<Filme*> setRes(a.begin(), a.end());
-    for(Filme* f : b) setRes.insert(f);
-    return vector<Filme*>(setRes.begin(), setRes.end());
+    vector<Filme*> resultado = a;
+    HashSet<Filme*> usado;
+    for(Filme* f : a) usado.inserir(f);
+    for(Filme* f : b){
+        if(!usado.existe(f)){
+            resultado.push_back(f);
+            usado.inserir(f);
+        }
+    }
+    return resultado;
 }
 
 vector<Filme*> Filmes::aplicarFiltro(string palavra){
@@ -214,8 +221,8 @@ vector<Filme*> Filmes::aplicarFiltro(string palavra){
         }
     }
 
-    if(mapaGenero.count(palavra)) return filtrarPorGenero(palavra);
-    if(mapaTipo.count(palavra)) return filtrarPorTipo(palavra);
+    if(mapaGenero.existe(palavra)) return filtrarPorGenero(palavra);
+    if(mapaTipo.existe(palavra)) return filtrarPorTipo(palavra);
     return {};
 }
 
