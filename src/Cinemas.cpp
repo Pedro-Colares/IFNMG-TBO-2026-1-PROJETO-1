@@ -5,6 +5,7 @@
 #include <stack>
 #include "Hash.h"
 #include "HashSet.h"
+#include "MergeSort.h"
 
 using namespace std;
 
@@ -91,6 +92,17 @@ void Cinemas::carregar(string arquivo, Filmes& filmes){
 Cinema* Cinemas::buscarPorId(string id){
     if(mapa.existe(id)) return mapa.getRef(id);
     return nullptr;
+}
+
+bool comparaCinemaPreco(Cinema* a, Cinema* b){
+    return a->getPreco() < b->getPreco();
+}
+
+vector<Cinema*> Cinemas::ordenarPorPreco(){
+    vector<Cinema*> copia = lista;
+    MergeSort(copia, 0, copia.size(), comparaCinemaPreco);
+    
+    return copia;
 }
 
 vector<Cinema*> Cinemas::filtrarPorPreco(double max){

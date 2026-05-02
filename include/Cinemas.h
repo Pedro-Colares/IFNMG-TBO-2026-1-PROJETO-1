@@ -1,5 +1,6 @@
 #ifndef CINEMAS_H
 #define CINEMAS_H
+
 #include <vector>
 #include <string>
 #include <map>
@@ -8,8 +9,11 @@
 #include "CINEMA.h"
 #include "FILME.h"
 #include "Filmes.h"
+
 using namespace std;
+
 class Cinemas{
+
 private:
     vector<Cinema*> lista;
     HashString<Cinema*> mapa;
@@ -20,6 +24,7 @@ private:
     HashLong<vector<Cinema*>> grade;
     int TAM = 1000;
     string limpar(string s);
+
 public:
     Cinemas();
     ~Cinemas();
@@ -27,6 +32,7 @@ public:
     Cinema* buscarPorId(string id);
     vector<Cinema*> getTodos();
     vector<Cinema*> buscarPorFilme(string idFilme);
+    vector<Cinema*> ordenarPorPreco();
     vector<Cinema*> filtrarPorPreco(double max);
     vector<Cinema*> filtrarPorDistancia(int x, int y, double maxDist);
     vector<Cinema*> filtrarPorGenero(string genero, Filmes& filmes);
@@ -39,5 +45,6 @@ public:
     vector<string> tokenizar(string s);
     vector<Cinema*> avaliarConsultaSimples(vector<string> tokens, Filmes& filmes);
     vector<Cinema*> aplicarFiltro(string palavra, Filmes& filmes);
+
 };
 #endif
