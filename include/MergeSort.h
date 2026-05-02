@@ -10,6 +10,6 @@ void MergeSort(vector<T>& L, int e, int d, bool (*compara)(T, T));
 template<typename T>
 void Merge(vector<T>& L, int e, int m, int d, bool (*compara)(T, T));
 
-#include "MergeSort.cpp"
+#include "../src/MergeSort.cpp"
 
 #endif
