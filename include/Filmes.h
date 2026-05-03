@@ -5,6 +5,7 @@
 #include "HashSet.h"
 #include<string>
 #include<vector>
+#include "MergeSort.h"
 using namespace std;
 class Filmes{
     private:
@@ -12,6 +13,12 @@ class Filmes{
     vector<Filme*> lista;    
     HashString<vector<Filme*>> mapaGenero; 
     HashString<vector<Filme*>> mapaTipo;
+    vector<Filme*> listaPorAno;
+    vector<Filme*> listaPorDuracao;
+    int BuscaBinariaMenorAno(int valor);
+    int BuscaBinariaMaiorAno(int valor);
+    int BuscaBinariaMenorDuracao(int valor);  
+    int BuscaBinariaMaiorDuracao(int valor);
     public:
       Filmes();
       virtual ~Filmes();

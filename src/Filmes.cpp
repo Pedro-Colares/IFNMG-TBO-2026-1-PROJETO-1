@@ -25,6 +25,64 @@ string limpar(string s){
     return s;
 }
 
+bool comparaFilmeAno(Filme* a, Filme* b){
+    return a->getAno() < b->getAno();
+}
+
+bool comparaFilmeDuracao(Filme* a, Filme* b){
+    return a->getDuracao() < b->getDuracao();
+}
+
+// acha o primeiro índice com ano >= valor
+int Filmes::BuscaBinariaMenorAno(int valor){
+    int esq = 0, dir = listaPorAno.size();
+    while(esq < dir){
+        int meio = (esq + dir) / 2;
+        if(listaPorAno[meio]->getAno() < valor)
+            esq = meio + 1;
+        else
+            dir = meio;
+    }
+    return esq;
+}
+
+// acha o primeiro índice com ano > valor
+int Filmes::BuscaBinariaMaiorAno(int valor){
+    int esq = 0, dir = listaPorAno.size();
+    while(esq < dir){
+        int meio = (esq + dir) / 2;
+        if(listaPorAno[meio]->getAno() <= valor)
+            esq = meio + 1;
+        else
+            dir = meio;
+    }
+    return esq;
+}
+
+int Filmes::BuscaBinariaMenorDuracao(int valor){
+    int esq = 0, dir = listaPorDuracao.size();
+    while(esq < dir){
+        int meio = (esq + dir) / 2;
+        if(listaPorDuracao[meio]->getDuracao() < valor)
+            esq = meio + 1;
+        else
+            dir = meio;
+    }
+    return esq;
+}
+
+int Filmes::BuscaBinariaMaiorDuracao(int valor){
+    int esq = 0, dir = listaPorDuracao.size();
+    while(esq < dir){
+        int meio = (esq + dir) / 2;
+        if(listaPorDuracao[meio]->getDuracao() <= valor)
+            esq = meio + 1;
+        else
+            dir = meio;
+    }
+    return esq;
+}
+
 void Filmes::carregar(string arquivo){
     ifstream file(arquivo);
     string linha;
@@ -98,6 +156,12 @@ void Filmes::carregar(string arquivo){
     }
 
     file.close();
+
+    listaPorAno = lista;
+    MergeSort(listaPorAno, 0, listaPorAno.size(), comparaFilmeAno);
+
+    listaPorDuracao = lista;
+    MergeSort(listaPorDuracao, 0, listaPorDuracao.size(), comparaFilmeDuracao);
 }
 
 Filme* Filmes::buscarMaisProximo(string id){
@@ -149,18 +213,20 @@ vector<Filme*> Filmes::filtrarPorTipo(string tipo){
 
 vector<Filme*> Filmes::filtrarPorAno(int min, int max){
     vector<Filme*> resultado;
-    for(Filme* f : lista){
-        if(f->estaNoIntervaloAno(min, max))
-            resultado.push_back(f);
+    int inicio = BuscaBinariaMenorAno(min);
+    int fim = BuscaBinariaMaiorAno(max);
+    for(int i = inicio; i < fim; i++){
+        resultado.push_back(listaPorAno[i]);
     }
     return resultado;
 }
 
 vector<Filme*> Filmes::filtrarPorDuracao(int min, int max){
     vector<Filme*> resultado;
-    for(Filme* f : lista){
-        if(f->estaNoIntervaloDuracao(min, max))
-            resultado.push_back(f);
+    int inicio = BuscaBinariaMenorDuracao(min);
+    int fim = BuscaBinariaMaiorDuracao(max);
+    for(int i = inicio; i < fim; i++){
+        resultado.push_back(listaPorDuracao[i]);
     }
     return resultado;
 }
