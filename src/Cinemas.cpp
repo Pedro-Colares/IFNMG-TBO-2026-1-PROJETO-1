@@ -270,7 +270,7 @@ vector<Cinema*> Cinemas::filtrarPorAno(int min, int max, Filmes& filmes){
 
     for(int i = ini; i < fim; i++){
         Filme* f = filmesPorAno[i];
-        string id = f->getId();
+        string id = "tt" + f->getId();
 
         if(mapaFilme.existe(id)){
             for(Cinema* c : mapaFilme.getRef(id)){
@@ -294,7 +294,7 @@ vector<Cinema*> Cinemas::filtrarPorDuracao(int min, int max, Filmes& filmes){
 
     for(int i = ini; i < fim; i++){
         Filme* f = filmesPorDuracao[i];
-        string id = f->getId();
+        string id = "tt" + f->getId();
 
         if(mapaFilme.existe(id)){
             for(Cinema* c : mapaFilme.getRef(id)){
