@@ -40,7 +40,8 @@ void Controller::consultaCinemas(){
 
     cout << "\nTotal: " << resultado.size() << "\n";
     for(Cinema* c : resultado){
-        cout << c->getNome() << "\n";
+        cout << "Cinema: " << c->getNome()
+     << " - ID: " << c->getId() << "\n";
     }
 
     cout << "Tempo: "
