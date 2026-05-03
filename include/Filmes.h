@@ -36,4 +36,8 @@ class Filmes{
       vector<Filme*> aplicarFiltro(string palavra);
       vector<Filme*> avaliarConsultaSimples(vector<string> tokens);
 };
+
+bool comparaFilmeAno(Filme* a, Filme* b);
+bool comparaFilmeDuracao(Filme* a, Filme* b);
+
 #endif

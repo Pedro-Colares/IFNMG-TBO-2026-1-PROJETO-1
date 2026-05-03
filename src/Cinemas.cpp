@@ -25,7 +25,89 @@ vector<Cinema*> Cinemas::getTodos(){
     return lista;
 }
 
+extern bool comparaFilmeAno(Filme*, Filme*);
+extern bool comparaFilmeDuracao(Filme*, Filme*);
+
+bool comparaCinemaPreco(Cinema* a, Cinema* b){
+    return a->getPreco() < b->getPreco();
+}
+
+vector<Cinema*> Cinemas::ordenarPorPreco(){
+    vector<Cinema*> copia = lista;
+    MergeSort(copia, 0, copia.size(), comparaCinemaPreco);
+    
+    return copia;
+}
+
+int Cinemas::buscaBinariaPreco(double max){
+    int l = 0;
+    int r = listaOrdenadaPreco.size() - 1;
+    int pos = -1;
+
+    while(l <= r){
+        int m = (l + r) / 2;
+
+        if(listaOrdenadaPreco[m]->getPreco() <= max){
+            pos = m;      
+            l = m + 1;    
+        } else {
+            r = m - 1;
+        }
+    }
+
+    return pos;
+}
+
+int Cinemas::buscaBinariaAnoMin(int valor){
+    int l = 0, r = filmesPorAno.size();
+    while(l < r){
+        int m = (l + r) / 2;
+        if(filmesPorAno[m]->getAno() < valor)
+            l = m + 1;
+        else
+            r = m;
+    }
+    return l;
+}
+
+int Cinemas::buscaBinariaAnoMax(int valor){
+    int l = 0, r = filmesPorAno.size();
+    while(l < r){
+        int m = (l + r) / 2;
+        if(filmesPorAno[m]->getAno() <= valor)
+            l = m + 1;
+        else
+            r = m;
+    }
+    return l;
+}
+
+int Cinemas::buscaBinariaDuracaoMin(int valor){
+    int l = 0, r = filmesPorDuracao.size();
+    while(l < r){
+        int m = (l + r) / 2;
+        if(filmesPorDuracao[m]->getDuracao() < valor)
+            l = m + 1;
+        else
+            r = m;
+    }
+    return l;
+}
+
+int Cinemas::buscaBinariaDuracaoMax(int valor){
+    int l = 0, r = filmesPorDuracao.size();
+    while(l < r){
+        int m = (l + r) / 2;
+        if(filmesPorDuracao[m]->getDuracao() <= valor)
+            l = m + 1;
+        else
+            r = m;
+    }
+    return l;
+}
+
 void Cinemas::carregar(string arquivo, Filmes& filmes){
+    HashSet<Filme*> usados;
     ifstream file(arquivo);
     string linha;
 
@@ -79,17 +161,28 @@ void Cinemas::carregar(string arquivo, Filmes& filmes){
             f = filmes.buscarMaisProximo(fid);
 
             if(f){
-                for(string g : f->getGeneros()){
-                    mapaGenero.getRef(g).inserir(c);
-                }
+                if(!usados.existe(f)){
+                filmesDosCinemas.push_back(f);
+                usados.inserir(f);
+            }
 
-                mapaTipo.getRef(f->getTipo()).inserir(c);
+            for(string g : f->getGeneros()){
+                mapaGenero.getRef(g).inserir(c);
+            }
+
+            mapaTipo.getRef(f->getTipo()).inserir(c);
             }
         }
     }
 
     listaOrdenadaPreco = lista;
     MergeSort(listaOrdenadaPreco, 0, listaOrdenadaPreco.size(), comparaCinemaPreco);
+    
+    filmesPorAno = filmesDosCinemas;  
+    MergeSort(filmesPorAno, 0, filmesPorAno.size(), comparaFilmeAno);
+
+    filmesPorDuracao = filmesDosCinemas;
+    MergeSort(filmesPorDuracao, 0, filmesPorDuracao.size(), comparaFilmeDuracao);
 }
 
 Cinema* Cinemas::buscarPorId(string id){
@@ -97,35 +190,6 @@ Cinema* Cinemas::buscarPorId(string id){
     return nullptr;
 }
 
-bool comparaCinemaPreco(Cinema* a, Cinema* b){
-    return a->getPreco() < b->getPreco();
-}
-
-vector<Cinema*> Cinemas::ordenarPorPreco(){
-    vector<Cinema*> copia = lista;
-    MergeSort(copia, 0, copia.size(), comparaCinemaPreco);
-    
-    return copia;
-}
-
-int Cinemas::buscaBinariaPreco(double max){
-    int l = 0;
-    int r = listaOrdenadaPreco.size() - 1;
-    int resp = -1;
-
-    while(l <= r){
-        int m = (l + r) / 2;
-
-        if(listaOrdenadaPreco[m]->getPreco() <= max){
-            resp = m;      
-            l = m + 1;    
-        } else {
-            r = m - 1;
-        }
-    }
-
-    return resp;
-}
 
 vector<Cinema*> Cinemas::filtrarPorPreco(double max){
     int pos = buscaBinariaPreco(max);
@@ -140,27 +204,24 @@ vector<Cinema*> Cinemas::filtrarPorPreco(double max){
 
 vector<Cinema*> Cinemas::filtrarPorDistancia(int x, int y, double distanciaMaxima){
     vector<Cinema*> resultado;
+    HashSet<Cinema*> usados;
 
     int bx = x / TAM;
     int by = y / TAM;
 
     int raioBlocos = distanciaMaxima / TAM + 1;
-
     for(int i = -raioBlocos; i <= raioBlocos; i++){
         for(int j = -raioBlocos; j <= raioBlocos; j++){
-
             long long chave = (long long)(bx + i) * 100000 + (by + j);
-
             if(grade.existe(chave)){
                 for(Cinema* c : grade.getRef(chave)){
-
                     int dx = c->getX() - x;
                     int dy = c->getY() - y;
 
                     double dist = sqrt(dx*dx + dy*dy);
-
-                    if(dist <= distanciaMaxima){
+                    if(dist <= distanciaMaxima && !usados.existe(c)){
                         resultado.push_back(c);
+                        usados.inserir(c);
                     }
                 }
             }
@@ -171,10 +232,20 @@ vector<Cinema*> Cinemas::filtrarPorDistancia(int x, int y, double distanciaMaxim
 }
 
 vector<Cinema*> Cinemas::buscarPorFilme(string idFilme){
-    if(mapaFilme.existe(idFilme)) return mapaFilme.getRef(idFilme);
-    return {};
-}
+    vector<Cinema*> resultado;
+    HashSet<Cinema*> usados;
 
+    if(mapaFilme.existe(idFilme)){
+        for(Cinema* c : mapaFilme.getRef(idFilme)){
+            if(!usados.existe(c)){
+                resultado.push_back(c);
+                usados.inserir(c);
+            }
+        }
+    }
+
+    return resultado;
+}
 
 vector<Cinema*> Cinemas::filtrarPorGenero(string genero, Filmes& filmes){
     if(mapaGenero.existe(genero)){
@@ -194,9 +265,11 @@ vector<Cinema*> Cinemas::filtrarPorAno(int min, int max, Filmes& filmes){
     vector<Cinema*> resultado;
     HashSet<Cinema*> usado;
 
-    vector<Filme*> filmesFiltrados = filmes.filtrarPorAno(min, max);
+    int ini = buscaBinariaAnoMin(min);
+    int fim = buscaBinariaAnoMax(max);
 
-    for(Filme* f : filmesFiltrados){
+    for(int i = ini; i < fim; i++){
+        Filme* f = filmesPorAno[i];
         string id = f->getId();
 
         if(mapaFilme.existe(id)){
@@ -216,9 +289,11 @@ vector<Cinema*> Cinemas::filtrarPorDuracao(int min, int max, Filmes& filmes){
     vector<Cinema*> resultado;
     HashSet<Cinema*> usado;
 
-    vector<Filme*> filmesFiltrados = filmes.filtrarPorDuracao(min, max);
+    int ini = buscaBinariaDuracaoMin(min);
+    int fim = buscaBinariaDuracaoMax(max);
 
-    for(Filme* f : filmesFiltrados){
+    for(int i = ini; i < fim; i++){
+        Filme* f = filmesPorDuracao[i];
         string id = f->getId();
 
         if(mapaFilme.existe(id)){

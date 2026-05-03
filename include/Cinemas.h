@@ -23,6 +23,10 @@ private:
     HashString<HashSet<Cinema*>> mapaGenero;
     HashString<HashSet<Cinema*>> mapaTipo;
     HashLong<vector<Cinema*>> grade;
+    vector<Filme*> filmesDosCinemas;
+    vector<Filme*> filmesPorAno;
+    vector<Filme*> filmesPorDuracao;
+
     int TAM = 1000;
     string limpar(string s);
 
@@ -36,9 +40,13 @@ public:
     vector<Cinema*> ordenarPorPreco();
     int buscaBinariaPreco(double max);
     vector<Cinema*> filtrarPorPreco(double max);
+    int buscaBinariaDuracaoMin(int valor);
+    int buscaBinariaDuracaoMax(int valor);
     vector<Cinema*> filtrarPorDistancia(int x, int y, double maxDist);
     vector<Cinema*> filtrarPorGenero(string genero, Filmes& filmes);
     vector<Cinema*> filtrarPorTipo(string tipo, Filmes& filmes);
+    int buscaBinariaAnoMin(int valor);
+    int buscaBinariaAnoMax(int valor);
     vector<Cinema*> filtrarPorAno(int min, int max, Filmes& filmes);
     vector<Cinema*> filtrarPorDuracao(int min, int max, Filmes& filmes);
     vector<Cinema*> intersecao(vector<Cinema*> a, vector<Cinema*> b);
