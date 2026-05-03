@@ -6,6 +6,7 @@ using namespace std;
 
 template<typename T>
 class HashSet{
+
 private:
     int capacidade;
     vector<list<T>> tabela;
@@ -17,6 +18,9 @@ private:
     }
 
 public:
+
+    friend class Cinemas;
+
     HashSet(int cap = 1007) : capacidade(cap){ tabela.resize(cap); }
 
     void inserir(const T& valor){
@@ -32,6 +36,18 @@ public:
             if(v == valor) return true;
         return false;
     }
+
+    vector<T> elementos() const {
+    vector<T> resultado;
+
+    for(const auto& bucket : tabela){
+        for(const T& v : bucket){
+            resultado.push_back(v);
+        }
+    }
+
+    return resultado;
+}
 };
 
 #endif

@@ -16,6 +16,7 @@ class Cinemas{
 
 private:
     vector<Cinema*> lista;
+    vector<Cinema*> listaOrdenadaPreco;
     HashString<Cinema*> mapa;
     map<double, vector<Cinema*>> indicePreco;
     HashString<vector<Cinema*>> mapaFilme;
@@ -33,6 +34,7 @@ public:
     vector<Cinema*> getTodos();
     vector<Cinema*> buscarPorFilme(string idFilme);
     vector<Cinema*> ordenarPorPreco();
+    int buscaBinariaPreco(double max);
     vector<Cinema*> filtrarPorPreco(double max);
     vector<Cinema*> filtrarPorDistancia(int x, int y, double maxDist);
     vector<Cinema*> filtrarPorGenero(string genero, Filmes& filmes);

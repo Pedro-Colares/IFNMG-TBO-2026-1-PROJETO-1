@@ -87,6 +87,9 @@ void Cinemas::carregar(string arquivo, Filmes& filmes){
             }
         }
     }
+
+    listaOrdenadaPreco = lista;
+    MergeSort(listaOrdenadaPreco, 0, listaOrdenadaPreco.size(), comparaCinemaPreco);
 }
 
 Cinema* Cinemas::buscarPorId(string id){
@@ -105,16 +108,34 @@ vector<Cinema*> Cinemas::ordenarPorPreco(){
     return copia;
 }
 
-vector<Cinema*> Cinemas::filtrarPorPreco(double max){
-    vector<Cinema*> resultado;
+int Cinemas::buscaBinariaPreco(double max){
+    int l = 0;
+    int r = listaOrdenadaPreco.size() - 1;
+    int resp = -1;
 
-    for(pair<const double, vector<Cinema*>> &p: indicePreco){
-        if(p.first <= max){
-            resultado.insert(resultado.end(), p.second.begin(), p.second.end());
+    while(l <= r){
+        int m = (l + r) / 2;
+
+        if(listaOrdenadaPreco[m]->getPreco() <= max){
+            resp = m;      
+            l = m + 1;    
+        } else {
+            r = m - 1;
         }
     }
 
-    return resultado;
+    return resp;
+}
+
+vector<Cinema*> Cinemas::filtrarPorPreco(double max){
+    int pos = buscaBinariaPreco(max);
+
+    if(pos == -1) return {};
+
+    return vector<Cinema*>(
+        listaOrdenadaPreco.begin(),
+        listaOrdenadaPreco.begin() + pos + 1
+    );
 }
 
 vector<Cinema*> Cinemas::filtrarPorDistancia(int x, int y, double distanciaMaxima){
@@ -156,81 +177,59 @@ vector<Cinema*> Cinemas::buscarPorFilme(string idFilme){
 
 
 vector<Cinema*> Cinemas::filtrarPorGenero(string genero, Filmes& filmes){
-    vector<Cinema*> resultado;
-    HashSet<Cinema*> usado;
-
-    for(Cinema* c : lista){
-    for(string fid : c->getFilmes()){
-        Filme* f = filmes.buscarPorId(fid);
-
-        if(f && f->temGenero(genero)){
-            if(!usado.existe(c)){
-                resultado.push_back(c);
-                usado.inserir(c);
-            }
-        }
+    if(mapaGenero.existe(genero)){
+        return mapaGenero.getRef(genero).elementos();
     }
-}
-
-    return resultado;
+    return {};
 }
 
 vector<Cinema*> Cinemas::filtrarPorTipo(string tipo, Filmes& filmes){
+    if(mapaTipo.existe(tipo)){
+        return mapaTipo.getRef(tipo).elementos();
+    }
+    return {};
+}   
+
+vector<Cinema*> Cinemas::filtrarPorAno(int min, int max, Filmes& filmes){
     vector<Cinema*> resultado;
     HashSet<Cinema*> usado;
 
-    for(Cinema* c : lista){
-    for(string fid : c->getFilmes()){
-        Filme* f = filmes.buscarPorId(fid);
+    vector<Filme*> filmesFiltrados = filmes.filtrarPorAno(min, max);
 
-        if(f && f->ehDoTipo(tipo)){
-            if(!usado.existe(c)){
-                resultado.push_back(c);
-                usado.inserir(c);
+    for(Filme* f : filmesFiltrados){
+        string id = f->getId();
+
+        if(mapaFilme.existe(id)){
+            for(Cinema* c : mapaFilme.getRef(id)){
+                if(!usado.existe(c)){
+                    resultado.push_back(c);
+                    usado.inserir(c);
+                }
             }
         }
     }
-}
 
     return resultado;
 }
 
-vector<Cinema*> Cinemas::filtrarPorAno(int min,int max,Filmes& filmes){
+vector<Cinema*> Cinemas::filtrarPorDuracao(int min, int max, Filmes& filmes){
     vector<Cinema*> resultado;
     HashSet<Cinema*> usado;
 
-    for(Cinema* c : lista){
-    for(string fid : c->getFilmes()){
-        Filme* f = filmes.buscarPorId(fid);
+    vector<Filme*> filmesFiltrados = filmes.filtrarPorDuracao(min, max);
 
-        if(f && f->estaNoIntervaloAno(min, max)){
-            if(!usado.existe(c)){
-                resultado.push_back(c);
-                usado.inserir(c);
+    for(Filme* f : filmesFiltrados){
+        string id = f->getId();
+
+        if(mapaFilme.existe(id)){
+            for(Cinema* c : mapaFilme.getRef(id)){
+                if(!usado.existe(c)){
+                    resultado.push_back(c);
+                    usado.inserir(c);
+                }
             }
         }
     }
-}
-
-    return resultado;
-}
-
-vector<Cinema*> Cinemas::filtrarPorDuracao(int min,int max,Filmes& filmes){
-    vector<Cinema*> resultado;
-    HashSet<Cinema*> usado;
-
-    for(Cinema* c : lista){
-    for(string fid : c->getFilmes()){
-        Filme* f = filmes.buscarPorId(fid);
-
-        if(f && f->estaNoIntervaloDuracao(min, max)){
-            if(!usado.existe(c)){
-                resultado.push_back(c);
-                usado.inserir(c);
-            }
-        }
-    }
-}
 
     return resultado;
 }
