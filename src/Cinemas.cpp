@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <iostream> 
 #include <stack>
 #include "Hash.h"
 #include "HashSet.h"
@@ -358,9 +359,20 @@ vector<Cinema*> Cinemas::aplicarFiltro(string palavra, Filmes& filmes){
         }
 
         if(chave == "filme"){
-            return buscarPorFilme(valor);
+            Filme* f = filmes.buscarPorTitulo(valor);
+            if(!f) return {};
+    
+            int idNum = stoi(f->getId());
+        string id = "tt" + f->getId();
+        vector<Cinema*> resultado = buscarPorFilme(id);
+    
+        if(resultado.empty()){
+            string idAnterior = "tt" + to_string(idNum - 1);
+            resultado = buscarPorFilme(idAnterior);
         }
-
+    
+    return resultado;
+}
         if(chave == "genero"){
             return filtrarPorGenero(valor, filmes);
         }
@@ -427,39 +439,34 @@ vector<Cinema*> Cinemas::filtrarConsulta(string consulta, Filmes& filmes){
 
 vector<Cinema*> Cinemas::avaliarConsultaSimples(vector<string> tokens, Filmes& filmes){
 
-    stack<vector<Cinema*>> pilhaResultados;
+    stack<pair<bool, vector<Cinema*>>> pilhaResultados;
     stack<string> pilhaOperadores;
-    stack<bool> pilhaInicializado;  // ← nova pilha
 
-    pilhaResultados.push({});
+    pilhaResultados.push({false, {}});
     pilhaOperadores.push("&");
-    pilhaInicializado.push(false);  // ← começa não inicializado
 
     for(const string& t : tokens){
 
         if(t == "("){
-            pilhaResultados.push({});
+            pilhaResultados.push({false, {}});
             pilhaOperadores.push("&");
-            pilhaInicializado.push(false);  // ← novo nível não inicializado
         }
 
         else if(t == ")"){
-            vector<Cinema*> fechado = pilhaResultados.top();
+            auto fechado = pilhaResultados.top();
             pilhaResultados.pop();
             pilhaOperadores.pop();
-            pilhaInicializado.pop();  // ← desempilha flag
 
             string op = pilhaOperadores.top();
 
-            if(!pilhaInicializado.top()){
-                pilhaResultados.top() = fechado;
-                pilhaInicializado.top() = true;
+            if(!pilhaResultados.top().first){
+                pilhaResultados.top() = {true, fechado.second};
             }
             else if(op == "&"){
-                pilhaResultados.top() = intersecao(pilhaResultados.top(), fechado);
+                pilhaResultados.top().second = intersecao(pilhaResultados.top().second, fechado.second);
             }
             else{
-                pilhaResultados.top() = uniao(pilhaResultados.top(), fechado);
+                pilhaResultados.top().second = uniao(pilhaResultados.top().second, fechado.second);
             }
         }
 
@@ -471,29 +478,35 @@ vector<Cinema*> Cinemas::avaliarConsultaSimples(vector<string> tokens, Filmes& f
             vector<Cinema*> atual = aplicarFiltro(t, filmes);
             string op = pilhaOperadores.top();
 
-            if(!pilhaInicializado.top()){
-                pilhaResultados.top() = atual;
-                pilhaInicializado.top() = true;  // ← marca como inicializado
+            if(!pilhaResultados.top().first){
+                pilhaResultados.top() = {true, atual};
             }
             else if(op == "&"){
-                pilhaResultados.top() = intersecao(pilhaResultados.top(), atual);
+                pilhaResultados.top().second = intersecao(pilhaResultados.top().second, atual);
             }
             else{
-                pilhaResultados.top() = uniao(pilhaResultados.top(), atual);
+                pilhaResultados.top().second = uniao(pilhaResultados.top().second, atual);
             }
         }
     }
 
-    return pilhaResultados.top();
+    return pilhaResultados.top().second;
 }
-
 
 vector<string> Cinemas::tokenizar(string s){
     vector<string> tokens;
     string atual = "";
 
-    for(char c : s){
-        if(c == ' '){
+    for(int i = 0; i < s.size(); i++){
+        char c = s[i];
+        if(c == '"'){
+            i++;
+            while(i < s.size() && s[i] != '"'){
+                atual += s[i];
+                i++;
+            }
+        }
+        else if(c == ' '){
             if(!atual.empty()){
                 tokens.push_back(atual);
                 atual = "";
@@ -512,8 +525,6 @@ vector<string> Cinemas::tokenizar(string s){
     }
 
     if(!atual.empty()) tokens.push_back(atual);
-
     for(string& t : tokens) t = limpar(t);
-
     return tokens;
 }

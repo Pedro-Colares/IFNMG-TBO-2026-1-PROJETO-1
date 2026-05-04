@@ -8,7 +8,6 @@ using namespace std;
 
 Filmes::Filmes(){}
 
-// Destrutor: libera a memória de todos os filmes alocados dinamicamente
 Filmes::~Filmes(){
     for(Filme* f : listaDireta){
         if(f != nullptr) delete f;
@@ -16,7 +15,6 @@ Filmes::~Filmes(){
     listaDireta.clear();
 }
 
-// Remove espaços, tabs e \r das bordas de uma string
 string limpar(string s){
     while(!s.empty() && (s[0] == ' ' || s[0] == '\t'))
         s.erase(0, 1);
@@ -104,7 +102,7 @@ void Filmes::carregar(string arquivo){
         getline(ss, id, '\t');
         getline(ss, tipo, '\t');
         getline(ss, titulo, '\t');
-        getline(ss, originalTitulo, '\t'); // coluna 4 — não usada, mas precisa ser consumida
+        getline(ss, originalTitulo, '\t'); 
         getline(ss, isAdultStr, '\t');
         getline(ss, anoStr, '\t');
         getline(ss, endYearStr, '\t');
@@ -125,6 +123,7 @@ void Filmes::carregar(string arquivo){
         Filme* f = new Filme();
         f->setId(id);
         f->setTipo(tipo);
+        titulo = limpar(titulo);
         f->setTitulo(titulo);
         f->setIsAdult(isAdultStr == "1");
         f->setStartYear((anoStr == "\\N" || anoStr.empty()) ? 0 : stoi(anoStr));
@@ -141,6 +140,7 @@ void Filmes::carregar(string arquivo){
         }
 
         listaDireta[idNumerico] = f;
+        mapaTitulo.inserir(titulo, f);
         mapaTipo.getRef(tipo).push_back(f);
 
         stringstream ssGeneros(generosStr);
@@ -163,6 +163,12 @@ void Filmes::carregar(string arquivo){
     }
     MergeSort(listaPorAno, 0, listaPorAno.size(), comparaFilmeAno);
     MergeSort(listaPorDuracao, 0, listaPorDuracao.size(), comparaFilmeDuracao);
+}
+
+Filme* Filmes::buscarPorTitulo(string titulo){
+    titulo = limpar(titulo);
+    if(mapaTitulo.existe(titulo)) return mapaTitulo.getRef(titulo);
+    return nullptr;
 }
 
 Filme* Filmes::buscarMaisProximo(string id){
@@ -295,39 +301,36 @@ vector<Filme*> Filmes::aplicarFiltro(string palavra){
 
 vector<Filme*> Filmes::avaliarConsultaSimples(vector<string> tokens){
 
-    stack<vector<Filme*>> pilhaResultados;
+    stack<pair<bool, vector<Filme*>>> pilhaResultados;
     stack<string> pilhaOperadores;
-    stack<bool> pilhaInicializado;  // ← nova pilha
 
-    pilhaResultados.push({});
+    pilhaResultados.push({false, {}});
     pilhaOperadores.push("&");
-    pilhaInicializado.push(false);  // ← começa não inicializado
 
     for(const string& t : tokens){
 
         if(t == "("){
-            pilhaResultados.push({});
+            pilhaResultados.push({false, {}});
             pilhaOperadores.push("&");
-            pilhaInicializado.push(false);  // ← novo nível não inicializado
         }
 
         else if(t == ")"){
-            vector<Filme*> fechado = pilhaResultados.top();
-            pilhaResultados.pop();
-            pilhaOperadores.pop();
-            pilhaInicializado.pop();  // ← desempilha flag
+            if(pilhaResultados.size() > 1){
+                auto fechado = pilhaResultados.top();
+                pilhaResultados.pop();
+                pilhaOperadores.pop();
 
-            string op = pilhaOperadores.top();
+                string op = pilhaOperadores.top();
 
-            if(!pilhaInicializado.top()){
-                pilhaResultados.top() = fechado;
-                pilhaInicializado.top() = true;
-            }
-            else if(op == "&"){
-                pilhaResultados.top() = intersecao(pilhaResultados.top(), fechado);
-            }
-            else{
-                pilhaResultados.top() = uniao(pilhaResultados.top(), fechado);
+                if(!pilhaResultados.top().first){
+                    pilhaResultados.top() = {true, fechado.second};
+                }
+                else if(op == "&"){
+                    pilhaResultados.top().second = intersecao(pilhaResultados.top().second, fechado.second);
+                }
+                else{
+                    pilhaResultados.top().second = uniao(pilhaResultados.top().second, fechado.second);
+                }
             }
         }
 
@@ -339,20 +342,19 @@ vector<Filme*> Filmes::avaliarConsultaSimples(vector<string> tokens){
             vector<Filme*> atual = aplicarFiltro(t);
             string op = pilhaOperadores.top();
 
-            if(!pilhaInicializado.top()){
-                pilhaResultados.top() = atual;
-                pilhaInicializado.top() = true;  // ← marca como inicializado
+            if(!pilhaResultados.top().first){
+                pilhaResultados.top() = {true, atual};
             }
             else if(op == "&"){
-                pilhaResultados.top() = intersecao(pilhaResultados.top(), atual);
+                pilhaResultados.top().second = intersecao(pilhaResultados.top().second, atual);
             }
             else{
-                pilhaResultados.top() = uniao(pilhaResultados.top(), atual);
+                pilhaResultados.top().second = uniao(pilhaResultados.top().second, atual);
             }
         }
     }
 
-    return pilhaResultados.top();
+    return pilhaResultados.top().second;
 }
 
 vector<Filme*> Filmes::filtrarConsulta(string consulta){

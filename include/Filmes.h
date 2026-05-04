@@ -9,6 +9,7 @@
 using namespace std;
 class Filmes{
     private:
+    HashString<Filme*> mapaTitulo;
     vector<Filme*> listaDireta;   
     HashString<vector<Filme*>> mapaGenero; 
     HashString<vector<Filme*>> mapaTipo;
@@ -34,6 +35,7 @@ class Filmes{
       vector<string> tokenizar(string s);
       vector<Filme*> aplicarFiltro(string palavra);
       vector<Filme*> avaliarConsultaSimples(vector<string> tokens);
+      Filme* buscarPorTitulo(string titulo);
 };
 
 bool comparaFilmeAno(Filme* a, Filme* b);
