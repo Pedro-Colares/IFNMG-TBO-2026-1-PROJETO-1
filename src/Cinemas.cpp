@@ -138,8 +138,6 @@ void Cinemas::carregar(string arquivo, Filmes& filmes){
         lista.push_back(c);
         mapa.inserir(c->getId(), c);
 
-        indicePreco[c->getPreco()].push_back(c);
-
         int bx = c->getX() / TAM;
         int by = c->getY() / TAM;
         long long chave = (long long)bx * 100000 + by;

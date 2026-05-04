@@ -18,7 +18,7 @@ private:
     vector<Cinema*> lista;
     vector<Cinema*> listaOrdenadaPreco;
     HashString<Cinema*> mapa;
-    map<double, vector<Cinema*>> indicePreco;
+    HashString<vector<Cinema*>> indicePreco;
     HashString<vector<Cinema*>> mapaFilme;
     HashString<HashSet<Cinema*>> mapaGenero;
     HashString<HashSet<Cinema*>> mapaTipo;
