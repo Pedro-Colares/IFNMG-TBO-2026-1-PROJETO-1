@@ -9,8 +9,7 @@
 using namespace std;
 class Filmes{
     private:
-    vector<Filme*> listaDireta;
-    vector<Filme*> lista;    
+    vector<Filme*> listaDireta;   
     HashString<vector<Filme*>> mapaGenero; 
     HashString<vector<Filme*>> mapaTipo;
     vector<Filme*> listaPorAno;

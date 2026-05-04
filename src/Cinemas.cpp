@@ -431,26 +431,31 @@ vector<Cinema*> Cinemas::avaliarConsultaSimples(vector<string> tokens, Filmes& f
 
     stack<vector<Cinema*>> pilhaResultados;
     stack<string> pilhaOperadores;
+    stack<bool> pilhaInicializado;  // ← nova pilha
 
     pilhaResultados.push({});
     pilhaOperadores.push("&");
+    pilhaInicializado.push(false);  // ← começa não inicializado
 
     for(const string& t : tokens){
 
         if(t == "("){
             pilhaResultados.push({});
             pilhaOperadores.push("&");
+            pilhaInicializado.push(false);  // ← novo nível não inicializado
         }
 
         else if(t == ")"){
             vector<Cinema*> fechado = pilhaResultados.top();
             pilhaResultados.pop();
             pilhaOperadores.pop();
+            pilhaInicializado.pop();  // ← desempilha flag
 
             string op = pilhaOperadores.top();
 
-            if(pilhaResultados.top().empty()){
+            if(!pilhaInicializado.top()){
                 pilhaResultados.top() = fechado;
+                pilhaInicializado.top() = true;
             }
             else if(op == "&"){
                 pilhaResultados.top() = intersecao(pilhaResultados.top(), fechado);
@@ -468,8 +473,9 @@ vector<Cinema*> Cinemas::avaliarConsultaSimples(vector<string> tokens, Filmes& f
             vector<Cinema*> atual = aplicarFiltro(t, filmes);
             string op = pilhaOperadores.top();
 
-            if(pilhaResultados.top().empty()){
+            if(!pilhaInicializado.top()){
                 pilhaResultados.top() = atual;
+                pilhaInicializado.top() = true;  // ← marca como inicializado
             }
             else if(op == "&"){
                 pilhaResultados.top() = intersecao(pilhaResultados.top(), atual);

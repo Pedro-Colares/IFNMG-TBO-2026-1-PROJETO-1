@@ -10,10 +10,10 @@ Filmes::Filmes(){}
 
 // Destrutor: libera a memória de todos os filmes alocados dinamicamente
 Filmes::~Filmes(){
-    for(int i = 0; i < lista.size(); i++){
-        delete lista[i];
+    for(Filme* f : listaDireta){
+        if(f != nullptr) delete f;
     }
-    lista.clear();
+    listaDireta.clear();
 }
 
 // Remove espaços, tabs e \r das bordas de uma string
@@ -151,16 +151,17 @@ void Filmes::carregar(string arquivo){
             f->addGenero(genero);
             mapaGenero.getRef(genero).push_back(f);
         }
-
-        lista.push_back(f);
     }
 
     file.close();
 
-    listaPorAno = lista;
+    for(Filme* f : listaDireta){
+        if(f != nullptr){
+        listaPorAno.push_back(f);
+        listaPorDuracao.push_back(f);
+        }
+    }
     MergeSort(listaPorAno, 0, listaPorAno.size(), comparaFilmeAno);
-
-    listaPorDuracao = lista;
     MergeSort(listaPorDuracao, 0, listaPorDuracao.size(), comparaFilmeDuracao);
 }
 
@@ -296,35 +297,37 @@ vector<Filme*> Filmes::avaliarConsultaSimples(vector<string> tokens){
 
     stack<vector<Filme*>> pilhaResultados;
     stack<string> pilhaOperadores;
+    stack<bool> pilhaInicializado;  // ← nova pilha
 
     pilhaResultados.push({});
     pilhaOperadores.push("&");
+    pilhaInicializado.push(false);  // ← começa não inicializado
 
     for(const string& t : tokens){
 
         if(t == "("){
             pilhaResultados.push({});
             pilhaOperadores.push("&");
+            pilhaInicializado.push(false);  // ← novo nível não inicializado
         }
 
         else if(t == ")"){
-            if(pilhaResultados.size() > 1){
+            vector<Filme*> fechado = pilhaResultados.top();
+            pilhaResultados.pop();
+            pilhaOperadores.pop();
+            pilhaInicializado.pop();  // ← desempilha flag
 
-                vector<Filme*> fechado = pilhaResultados.top();
-                pilhaResultados.pop();
-                pilhaOperadores.pop();
+            string op = pilhaOperadores.top();
 
-                string op = pilhaOperadores.top();
-
-                if(pilhaResultados.top().empty()){
-                    pilhaResultados.top() = fechado;
-                }
-                else if(op == "&"){
-                    pilhaResultados.top() = intersecao(pilhaResultados.top(), fechado);
-                }
-                else{
-                    pilhaResultados.top() = uniao(pilhaResultados.top(), fechado);
-                }
+            if(!pilhaInicializado.top()){
+                pilhaResultados.top() = fechado;
+                pilhaInicializado.top() = true;
+            }
+            else if(op == "&"){
+                pilhaResultados.top() = intersecao(pilhaResultados.top(), fechado);
+            }
+            else{
+                pilhaResultados.top() = uniao(pilhaResultados.top(), fechado);
             }
         }
 
@@ -336,8 +339,9 @@ vector<Filme*> Filmes::avaliarConsultaSimples(vector<string> tokens){
             vector<Filme*> atual = aplicarFiltro(t);
             string op = pilhaOperadores.top();
 
-            if(pilhaResultados.top().empty()){
+            if(!pilhaInicializado.top()){
                 pilhaResultados.top() = atual;
+                pilhaInicializado.top() = true;  // ← marca como inicializado
             }
             else if(op == "&"){
                 pilhaResultados.top() = intersecao(pilhaResultados.top(), atual);
