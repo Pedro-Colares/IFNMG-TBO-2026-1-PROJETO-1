@@ -20,9 +20,8 @@ void Controller::consultaFilmes(){
     auto fim = high_resolution_clock::now();
 
     for(Filme* f : resultado){
-        cout << f->getTitulo() << "\n";
+    cout << f->getTitulo() << "\n";
     }
-
     cout << "\nTotal: " << resultado.size() << "\n";
     cout << "Tempo: "
      << duration_cast<milliseconds>(fim - inicio).count()
@@ -39,14 +38,11 @@ void Controller::consultaCinemas(){
     auto fim = high_resolution_clock::now();
 
     for(Cinema* c : resultado){
-        cout << "Cinema: " << c->getNome()
-     << " - ID: " << c->getId() << "\n";
+        cout << "Cinema: " << c->getNome() << " - ID: " << c->getId() << "\n";
     }
 
     cout << "\nTotal: " << resultado.size() << "\n";
-    cout << "Tempo: "
-         << duration_cast<milliseconds>(fim - inicio).count()
-         << " ms\n";
+    cout << "Tempo: " << duration_cast<milliseconds>(fim - inicio).count() << " ms\n";
 }
 
 void Controller::executar(){
