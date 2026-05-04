@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include <map>
 #include "Hash.h"
 #include "HashSet.h"
 #include "CINEMA.h"
@@ -18,7 +17,6 @@ private:
     vector<Cinema*> lista;
     vector<Cinema*> listaOrdenadaPreco;
     HashString<Cinema*> mapa;
-    HashString<vector<Cinema*>> indicePreco;
     HashString<vector<Cinema*>> mapaFilme;
     HashString<HashSet<Cinema*>> mapaGenero;
     HashString<HashSet<Cinema*>> mapaTipo;
