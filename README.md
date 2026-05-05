@@ -2,7 +2,7 @@
 
 ## 📌 Introdução
 
-Este projeto é o **Primeiro Projeto da disciplina de Técnicas de Busca e Ordenação**.
+Este é o **Primeiro Projeto da disciplina de Técnicas de Busca e Ordenação**.
 
 O objetivo é aplicar conceitos de **estruturas de dados**, **busca** e **ordenação** em um cenário prático: um sistema de consulta de filmes e cinemas.
 
@@ -29,7 +29,7 @@ O usuário pode filtrar filmes por:
 
 ---
 
-### 🏢 Consulta de Cinemas
+### 🏢📽️ Consulta de Cinemas
 
 O usuário pode buscar cinemas com base em:
 
